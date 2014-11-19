@@ -3,6 +3,5 @@
 export ROS_HOSTNAME=senna
 export ROS_MASTER_URI=http://senna:11311
 
-source /opt/ros/indigo/setup.bash
 
 
