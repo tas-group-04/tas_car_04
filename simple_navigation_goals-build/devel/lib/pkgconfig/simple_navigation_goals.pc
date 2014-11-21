@@ -1,0 +1,8 @@
+prefix=/home/mustafasezer/catkin_ws/src/tas_car/tas_car_04/simple_navigation_goals-build/devel
+
+Name: simple_navigation_goals
+Description: Description of simple_navigation_goals
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/mustafasezer/catkin_ws/src/tas_car/tas_car_04/simple_navigation_goals-build/devel/lib 
+Requires: 

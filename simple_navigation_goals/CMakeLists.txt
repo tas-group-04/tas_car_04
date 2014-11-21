@@ -10,6 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
 )
 
+FIND_PACKAGE(Qt4 REQUIRED)
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -111,7 +115,7 @@ add_executable(simple_navigation_goals_node src/main.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(simple_navigation_goals_node
-  ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES} ${QT_LIBRARIES}
 )
 
 #############

@@ -8,6 +8,12 @@
 #include <move_base_msgs/MoveBaseActionResult.h>
 #include <actionlib/client/simple_action_client.h>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <qstring.h>
+#include <qstringlist.h>
+
 using namespace std;
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
@@ -41,14 +47,65 @@ int main(int argc, char** argv){
     std::vector<geometry_msgs::Pose> waypoints; // vector of goals, with position and orientation
 
     geometry_msgs::Pose waypoint1;
-    waypoint1.position.x = 22.0;
+    /*waypoint1.position.x = 22.0;
     waypoint1.position.y = 10.75;
     waypoint1.position.z = 0.000;
     waypoint1.orientation.x = 0.000;
     waypoint1.orientation.y = 0.000;
     waypoint1.orientation.z = 0;
     waypoint1.orientation.w = 1;
-    waypoints.push_back(waypoint1);
+    waypoints.push_back(waypoint1);*/
+
+
+    ifstream file;
+    file.open("../../goals.txt");
+
+    string s_line;
+    QString line;
+
+    int num=0;
+
+    bool* ok;
+
+    while(!file.eof()){
+        getline(file,s_line);
+        line = s_line.c_str();
+        if(line.contains("position")){
+            num++;
+            getline(file,s_line);
+            line = s_line.c_str();
+            QStringList value;
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.position.x = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.position.y = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.position.z = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.orientation.x = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.orientation.y = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.orientation.z = value.at(1).toDouble(ok);
+            getline(file,s_line);
+            line = s_line.c_str();
+            value = line.split(":", QString::SkipEmptyParts);
+            waypoint1.orientation.w = value.at(1).toDouble(ok);
+        }
+        waypoints.push_back(waypoint1);
+    }
+
 
 
 
