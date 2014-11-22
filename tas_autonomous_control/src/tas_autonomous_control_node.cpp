@@ -19,7 +19,7 @@ int main(int argc, char** argv)
         }
         if(autonomous_control.control_Mode.data==0 && control_mode_changed)
         {
-            ROS_INFO("Changed to Manual Control Mode!");
+            ROS_INFO("\033[39mChanged to Manual Control Mode!\033[39m");
         }
         else
         {
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
             {
                 if(control_mode_changed)
                 {
-                    ROS_INFO("Changed to Automatic Control Mode!");
+                    ROS_INFO("\033[38;5;148mChanged to Automatic Control Mode!\033[39m");
                 }
                 if(autonomous_control.cmd_linearVelocity>0)
                 {
