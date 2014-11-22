@@ -7,11 +7,19 @@ int main(int argc, char** argv)
 
     ros::Rate loop_rate(50);
 
+    //dummy number for old_control_mode at the beginning & control mode change flag
+    int16_t old_control_mode = 15;
+    bool control_mode_changed = false;
+
     while(ros::ok())
     {
-        if(autonomous_control.control_Mode.data==0)
+        if(old_control_mode != autonomous_control.control_Mode.data)
         {
-            ROS_INFO("Manually Control!");
+            control_mode_changed = true;
+        }
+        if(autonomous_control.control_Mode.data==0 && control_mode_changed)
+        {
+            ROS_INFO("Changed to Manual Control Mode!");
         }
         else
         {
@@ -22,7 +30,10 @@ int main(int argc, char** argv)
             }
             else
             {
-                ROS_INFO("Automatic Control!");
+                if(control_mode_changed)
+                {
+                    ROS_INFO("Changed to Automatic Control Mode!");
+                }
                 if(autonomous_control.cmd_linearVelocity>0)
                 {
                     autonomous_control.control_servo.x = 1550;
@@ -38,10 +49,9 @@ int main(int argc, char** argv)
 
                 autonomous_control.control_servo.y = autonomous_control.cmd_steeringAngle;
             }
-
             autonomous_control.control_servo_pub_.publish(autonomous_control.control_servo);
-
         }
+        old_control_mode = autonomous_control.control_Mode.data;
 
         ros::spinOnce();
         loop_rate.sleep();
