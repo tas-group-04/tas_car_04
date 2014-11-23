@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "tas")
+set(tas_MAINTAINER "laith <laith@todo.todo>")
+set(tas_DEPRECATED "")
+set(tas_VERSION "0.0.0")
+set(tas_BUILD_DEPENDS )
+set(tas_RUN_DEPENDS )
+set(tas_BUILDTOOL_DEPENDS "catkin")

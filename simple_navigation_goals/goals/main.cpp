@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     ifstream file;
-    file.open("../../goals.txt");
+    file.open("/home/mustafasezer/catkin_ws/src/tas_car_04/goals.txt");
 
     string s_line;
     QString line;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     double px,py,pz,ox,oy,oz,ow;
 
-    while(!file.eof()){
+    while(num<=19){
         getline(file,s_line);
         line = s_line.c_str();
         if(line.contains("position")){

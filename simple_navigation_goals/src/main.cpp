@@ -28,7 +28,7 @@ void doneCb(const actionlib::SimpleClientGoalState& state, const move_base_msgs:
 /**
  * Callback function, called once when the goal becomes active
  */
-void activeCb() {
+void activeCb(){
     ROS_INFO("Goal just went active");
 }
 
@@ -106,10 +106,6 @@ int main(int argc, char** argv){
         waypoints.push_back(waypoint1);
     }
 
-
-
-
-
     MoveBaseClient ac("move_base", true); // action client to spin a thread by default
 
     while (!ac.waitForServer(ros::Duration(5.0))) { // wait for the action server to come up
@@ -122,14 +118,14 @@ int main(int argc, char** argv){
     for(int i = 0; i < waypoints.size(); ++i) { // loop over all goal points, point by point
         goal.target_pose.header.stamp = ros::Time::now(); // set current time
         goal.target_pose.pose = waypoints.at(i);
-        ROS_INFO("Sending goal");
+        ROS_INFO("Sending goal: x=%f, y=%f", goal.target_pose.pose.position.x, goal.target_pose.pose.position.y);
         ac.sendGoal(goal, &doneCb, &activeCb, &feedbackCb); // send goal and register callback handler
         ac.waitForResult(); // wait for goal result
 
         if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-            ROS_INFO("The base moved to %d goal", i);
+            ROS_INFO("The base moved to %d goal: x=%f, y=%f", i, goal.target_pose.pose.position.x, goal.target_pose.pose.position.y);
         } else {
-            ROS_INFO("The base failed to move to %d goal for some reason", i);
+            ROS_INFO("The base failed to move to %d goal (x=%f, y=%f) for some reason", i, goal.target_pose.pose.position.x, goal.target_pose.pose.position.y);
         }
     }
     return 0;

@@ -1,0 +1,8 @@
+prefix=/home/mustafasezer/catkin_ws/src/tas_car_04/wii_control-build/devel
+
+Name: wii_control
+Description: Description of wii_control
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/mustafasezer/catkin_ws/src/tas_car_04/wii_control-build/devel/lib 
+Requires: 

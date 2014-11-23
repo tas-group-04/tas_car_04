@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: tas_autonomous_control
+Description: Description of tas_autonomous_control
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 

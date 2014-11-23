@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/mustafasezer/catkin_ws/src/tas_car_04/tas_autonomous_control-build/devel/setup.sh
