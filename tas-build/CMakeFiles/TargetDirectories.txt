@@ -1,7 +1,0 @@
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/CMakeFiles/_catkin_empty_exported_target.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/CMakeFiles/clean_test_results.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/CMakeFiles/doxygen.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/gtest/CMakeFiles/gtest.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/gtest/CMakeFiles/gtest_main.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/CMakeFiles/run_tests.dir
-/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/CMakeFiles/tests.dir

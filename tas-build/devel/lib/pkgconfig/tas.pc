@@ -1,8 +1,0 @@
-prefix=/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/devel
-
-Name: tas
-Description: Description of tas
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/mustafasezer/catkin_ws/src/tas_car_04/tas-build/devel/lib 
-Requires: 
