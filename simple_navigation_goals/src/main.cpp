@@ -66,7 +66,7 @@ int main(int argc, char** argv){
 
     int num=0;
 
-    while(num<19){
+    while(!file.eof()){
         getline(file,s_line);
         line = s_line.c_str();
         if(line.contains("position")){
