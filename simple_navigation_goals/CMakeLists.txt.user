@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.2.1, 2014-11-22T13:51:18. -->
+<!-- Written by QtCreator 3.2.1, 2014-11-23T18:28:29. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -66,7 +66,7 @@
    <value type="int" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.BuildConfiguration.0">
     <value type="bool" key="CMakeProjectManager.CMakeBuildConfiguration.UseNinja">false</value>
-    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/mustafasezer/catkin_ws/src/tas_car/tas_car_04/simple_navigation_goals-build</value>
+    <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">/home/mustafasezer/catkin_ws/src/tas_car_04/simple_navigation_goals-build</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
       <value type="QString" key="CMakeProjectManager.MakeStep.AdditionalArguments"></value>

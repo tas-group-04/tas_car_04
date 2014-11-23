@@ -13,6 +13,7 @@
 #include <string>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <QDir>
 
 using namespace std;
 
@@ -58,16 +59,14 @@ int main(int argc, char** argv){
 
 
     ifstream file;
-    file.open("../../goals.txt");
+    file.open(QDir::homePath().append("/catkin_ws/src/tas_car_04/goals.txt").toAscii());
 
     string s_line;
     QString line;
 
     int num=0;
 
-    bool* ok;
-
-    while(!file.eof()){
+    while(num<19){
         getline(file,s_line);
         line = s_line.c_str();
         if(line.contains("position")){
@@ -76,34 +75,38 @@ int main(int argc, char** argv){
             line = s_line.c_str();
             QStringList value;
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.x = value.at(1).toDouble(ok);
+            waypoint1.position.x = value.at(1).toFloat();
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.y = value.at(1).toDouble(ok);
+            waypoint1.position.y = value.at(1).toFloat();
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.z = value.at(1).toDouble(ok);
+            waypoint1.position.z = value.at(1).toFloat();
             getline(file,s_line);
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.x = value.at(1).toDouble(ok);
+            waypoint1.orientation.x = value.at(1).toFloat();
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.y = value.at(1).toDouble(ok);
+            waypoint1.orientation.y = value.at(1).toFloat();
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.z = value.at(1).toDouble(ok);
+            waypoint1.orientation.z = value.at(1).toFloat();
             getline(file,s_line);
             line = s_line.c_str();
             value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.w = value.at(1).toDouble(ok);
+            waypoint1.orientation.w = value.at(1).toFloat();
+            waypoints.push_back(waypoint1);
         }
-        waypoints.push_back(waypoint1);
+    }
+
+    for(int i=0; i<waypoints.size(); i++){
+        ROS_INFO("Goal %d: x=%f, y=%f, w=%f", i, waypoints.at(i).position.x, waypoints.at(i).position.y, waypoints.at(i).orientation.w);
     }
 
     MoveBaseClient ac("move_base", true); // action client to spin a thread by default
