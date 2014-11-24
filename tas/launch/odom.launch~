@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+  <master auto="start"/>
+  <param name="/use_sim_time" value="false"/>
+
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.28 0.0 0.18 0.0 0.0 0.0 /base_link /laser 40" />
+  <node pkg="tf" type="static_transform_publisher" name="hector_footprint_to_hector_scan" args="0.28 0.0 0.18 0.0 0.0 0.0 /hector_footprint /hector_scan 40" />
+
+  <!-- remap the laser msg -->
+  <node pkg="TAS_Laser_Pub" type="TAS_Laser_Pub_node" name="laserPub_node"/>
+
+  <!-- imu -->
+  <!--include file="$(find razor_imu_9dof)/launch/razor.launch"/-->
+
+  <!-- hector slam -->
+  <include file="$(find tas)/launch/config/hector_mapping/mapping_default_yike.launch"/>
+
+  <!-- hector slam odom -->
+  <node pkg="tas_odom" type="tas_odom_node" name="tas_odom_node" output="screen">
+    <param name="rate" value="50"/>
+  </node>
+
+</launch>

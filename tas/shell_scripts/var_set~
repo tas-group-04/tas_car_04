@@ -1,3 +1,18 @@
-bla
+#!/bin/sh
+
+NAME=""
+echo $NAME
+
+input="Foo bar"
+echo ${input?Error \$input is not defined.}
+unset input
+echo ${input?Error \$input is not defined.}
+
+if [ ! -z "$NAME" ]; then
+	echo "Is not Zero"
+fi
+
+
+
 
 

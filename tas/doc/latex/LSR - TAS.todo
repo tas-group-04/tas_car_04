@@ -1,0 +1,4 @@
+\contentsline {todo}{Correct entries in table (fake values)}{4}{todo.1}
+\contentsline {todo}{Add ros/opt..../setup.bash to ros\_setup file, and change file extension}{9}{todo.2}
+\contentsline {todo}{Velocity has to be in base\_link frame/tas\_odom publishes twist with velocity in odom frame}{13}{todo.3}
+\contentsline {todo}{Put arduino code in repository}{17}{todo.4}

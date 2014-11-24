@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Setup USB permissions for laserscanner and imu
+perm0=$(stat -c %a "/dev/ttyACM0")
+perm1=$(stat -c %a "/dev/ttyACM1")
+
+if [ "$perm0" = "777" ] && [ "$perm1" = "777" ]; then
+    	echo "USB permissions already set..."
+else
+	echo "Set permissions for laserscanner and imu..."
+	sudo chmod 777 /dev/ttyACM*
+fi
+
+#Source setup.bash file
+echo "Source setup file..."
+source ~/catkin_ws/devel/setup.bash
+source /opt/ros/indigo/setup.bash
+#Export variables to use RVIZ on another computer
+#echo "Export variables for external RVIZ"
+#export ROS_HOSTNAME=vettel
+#export ROS_MASTER_URI=http://vettel:11311
+
+

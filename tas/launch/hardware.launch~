@@ -5,7 +5,7 @@
   <param name="/use_sim_time" value="false"/>
 
   <!-- run serial connection -->
-  <node name="rosserial_python" pkg="rosserial_python" type="serial_node.py" args="/dev/arduino"/>
+  <node name="rosserial_python" pkg="rosserial_python" type="serial_node.py" args="/dev/ttyACM0"/>
 
   <!-- run wii joystick-->
   <node respawn="true" pkg="wiimote"  type="wiimote_node.py" name="wiimote" output="screen">
@@ -16,25 +16,14 @@
   <!-- Run wii control -->
   <node pkg = "wii_control" type="wii_node" name="wii_control" output="screen"/>
 
- <!-- Run laserscanner at the front -->
-  <node name="hokuyo_front" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
+ <!-- Run laserscanner -->
+  <node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
     <!-- Starts up faster, but timestamps will be inaccurate. --> 
     <param name="calibrate_time" type="bool" value="false"/> 
     <!-- Set the port to connect to here -->
-    <param name="port" type="string" value="/dev/hokuyo_front"/> 
+    <param name="port" type="string" value="/dev/ttyACM1"/> 
     <param name="intensity" type="bool" value="false"/>
   </node>
-
- <!-- Run laserscanner at the back -->
-  <node name="hokuyo_back" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
-    <!-- Starts up faster, but timestamps will be inaccurate. --> 
-    <param name="calibrate_time" type="bool" value="false"/> 
-    <!-- Set the port to connect to here -->
-    <param name="port" type="string" value="/dev/hokuyo_back"/> 
-    <param name="intensity" type="bool" value="false"/>
-    <remap from="scan" to="scan_back">
-  </node>
-
 
  <!-- Run xsens driver -->
   <arg name="frame_id" default="/imu"/>

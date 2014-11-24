@@ -1,38 +1,19 @@
 #!/bin/sh
 
-echo "This will set up the correct environment to work with the tas-car..."
-echo "Please type in the root password:"
+# Setup USB permissions for laserscanner and imu
+perm0=$(stat -c %a "/dev/ttyACM0")
+perm1=$(stat -c %a "/dev/ttyACM1")
 
-[ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
-
-DIR=$(pwd)
-
-#------------------------------------
-#-----------Add udev rule------------
-#------------------------------------
-
-echo "------------------------------------"
-echo "Set up UDEV rules for laserscanners and arduino..."
-
-#Remove if already existing and then copy UDEV file
-if [ -f /etc/udev/rules.d/10-tas.rules ]; then
-	sudo rm /etc/udev/rules.d/10-tas.rules
+if [ "$perm0" = "777" ] && [ "$perm1" = "777" ]; then
+    	echo "USB permissions already set..."
+else
+	echo "Set permissions for laserscanner and imu..."
+	sudo chmod 777 /dev/ttyACM*
 fi
 
-sudo cp $DIR/10-tas.rules /etc/udev/rules.d
-
-
-
-#Add source command to bashrc
-echo "------------------------------------"
-echo "Set up ROS environment"
-
-echo "" >> ~/.bashrc
-echo "#Source commands to set up ROS environment" >> ~/.bashrc
-echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
-echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
-
-exit
+#Source setup.bash file
+echo "Source setup file..."
+source ~/catkin_ws/devel/setup.bash
 
 #Export variables to use RVIZ on another computer
 #echo "Export variables for external RVIZ"

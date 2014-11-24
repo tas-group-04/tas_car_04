@@ -1,11 +1,11 @@
 #!/bin/sh
 
+NAME="bla"
+echo $NAME
 
-
-# Assign the current work directory to the bash script variable 'CWD'.
-CWD=$(pwd)
-
-# Print it.
-printf "%s\n" ${CWD}
-
+if [ ! -z "$NAME" ]; then
+	echo "Is not Zero"
+else
+	echo "Is zero"
+fi
 
