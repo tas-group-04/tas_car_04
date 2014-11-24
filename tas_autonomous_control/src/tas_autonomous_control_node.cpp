@@ -17,9 +17,13 @@ int main(int argc, char** argv)
         {
             control_mode_changed = true;
         }
+        else
+        {
+            control_mode_changed = false;
+        }
         if(autonomous_control.control_Mode.data==0 && control_mode_changed)
         {
-            ROS_INFO("\033[39mChanged to Manual Control Mode!\033[39m");
+            ROS_INFO("\033[38;5;148mChanged to Manual Control Mode!\033[39m");
         }
         else
         {
@@ -55,7 +59,6 @@ int main(int argc, char** argv)
 
         ros::spinOnce();
         loop_rate.sleep();
-
     }
 
     return 0;
