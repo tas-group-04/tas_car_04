@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(simple_navigation_goals)
 
+#set(CMAKE_BUILD_TYPE Debug)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -9,6 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
   move_base_msgs
   roscpp
 )
+
+FIND_PACKAGE(Qt4 REQUIRED)
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -111,7 +117,7 @@ add_executable(simple_navigation_goals_node src/main.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(simple_navigation_goals_node
-  ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES} ${QT_LIBRARIES}
 )
 
 #############

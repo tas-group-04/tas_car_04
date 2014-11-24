@@ -1,0 +1,322 @@
+header: 
+  seq: 27
+  stamp: 
+    secs: 1416419249
+    nsecs: 313087325
+  frame_id: map
+pose: 
+  position: 
+    x: 13.5089244843
+    y: 19.5432434082
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.99982218171
+    w: 0.0188574908332
+---
+header: 
+  seq: 28
+  stamp: 
+    secs: 1416419253
+    nsecs: 593959090
+  frame_id: map
+pose: 
+  position: 
+    x: 11.5734004974
+    y: 19.6039924622
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.96275565429
+    w: -0.270372983362
+---
+header: 
+  seq: 29
+  stamp: 
+    secs: 1416419257
+    nsecs: 198390529
+  frame_id: map
+pose: 
+  position: 
+    x: 10.9722881317
+    y: 18.4533977509
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.718788762243
+    w: 0.695228534565
+---
+header: 
+  seq: 30
+  stamp: 
+    secs: 1416419259
+    nsecs: 668800378
+  frame_id: map
+pose: 
+  position: 
+    x: 11.0364398956
+    y: 14.7617874146
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.753509525205
+    w: 0.657436989699
+---
+header: 
+  seq: 31
+  stamp: 
+    secs: 1416419262
+    nsecs: 548966727
+  frame_id: map
+pose: 
+  position: 
+    x: 10.5662231445
+    y: 11.1835393906
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.717020713047
+    w: 0.697051861099
+---
+header: 
+  seq: 32
+  stamp: 
+    secs: 1416419265
+    nsecs: 681296365
+  frame_id: map
+pose: 
+  position: 
+    x: 10.5993881226
+    y: 8.147108078
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.584702102328
+    w: 0.811248082607
+---
+header: 
+  seq: 33
+  stamp: 
+    secs: 1416419268
+    nsecs: 500227287
+  frame_id: map
+pose: 
+  position: 
+    x: 10.8852977753
+    y: 6.50057935715
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.0950748093834
+    w: 0.995470130451
+---
+header: 
+  seq: 34
+  stamp: 
+    secs: 1416419270
+    nsecs: 795247586
+  frame_id: map
+pose: 
+  position: 
+    x: 12.5404911041
+    y: 6.22041225433
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.0212965461867
+    w: 0.999773202842
+---
+header: 
+  seq: 35
+  stamp: 
+    secs: 1416419274
+    nsecs: 507955225
+  frame_id: map
+pose: 
+  position: 
+    x: 17.6645755768
+    y: 6.12087917328
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: -0.0384519002081
+    w: 0.99926045222
+---
+header: 
+  seq: 36
+  stamp: 
+    secs: 1416419277
+    nsecs: 106535406
+  frame_id: map
+pose: 
+  position: 
+    x: 21.9666004181
+    y: 5.81490516663
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.0924469221136
+    w: 0.99571761388
+---
+header: 
+  seq: 37
+  stamp: 
+    secs: 1416419280
+    nsecs: 155576226
+  frame_id: map
+pose: 
+  position: 
+    x: 22.947183609
+    y: 6.15405654907
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.411511073823
+    w: 0.911404759764
+---
+header: 
+  seq: 38
+  stamp: 
+    secs: 1416419283
+    nsecs: 140779358
+  frame_id: map
+pose: 
+  position: 
+    x: 23.5628089905
+    y: 7.17887306213
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.680341757101
+    w: 0.732895008541
+---
+header: 
+  seq: 39
+  stamp: 
+    secs: 1416419285
+    nsecs: 399022437
+  frame_id: map
+pose: 
+  position: 
+    x: 23.1909980774
+    y: 8.76987266541
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.682235249166
+    w: 0.731132727209
+---
+header: 
+  seq: 40
+  stamp: 
+    secs: 1416419289
+    nsecs: 65473514
+  frame_id: map
+pose: 
+  position: 
+    x: 22.7672233582
+    y: 10.7081766129
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.649414139544
+    w: 0.760434925132
+---
+header: 
+  seq: 41
+  stamp: 
+    secs: 1416419291
+    nsecs: 428042281
+  frame_id: map
+pose: 
+  position: 
+    x: 23.3821773529
+    y: 13.9028568268
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.667436459816
+    w: 0.744666752385
+---
+header: 
+  seq: 42
+  stamp: 
+    secs: 1416419293
+    nsecs: 535570243
+  frame_id: map
+pose: 
+  position: 
+    x: 23.4739322662
+    y: 17.2069206238
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.699799438416
+    w: 0.714339377322
+---
+header: 
+  seq: 43
+  stamp: 
+    secs: 1416419295
+    nsecs: 984222700
+  frame_id: map
+pose: 
+  position: 
+    x: 23.153093338
+    y: 18.7152328491
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.894033063245
+    w: 0.448000984178
+---
+header: 
+  seq: 44
+  stamp: 
+    secs: 1416419298
+    nsecs: 652124299
+  frame_id: map
+pose: 
+  position: 
+    x: 21.7922935486
+    y: 19.1430168152
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.99813407998
+    w: 0.0610602848176
+---
+header: 
+  seq: 45
+  stamp: 
+    secs: 1416419300
+    nsecs: 574319003
+  frame_id: map
+pose: 
+  position: 
+    x: 16.618309021
+    y: 19.5007343292
+    z: 0.0
+  orientation: 
+    x: 0.0
+    y: 0.0
+    z: 0.99982420402
+    w: 0.01874996148
