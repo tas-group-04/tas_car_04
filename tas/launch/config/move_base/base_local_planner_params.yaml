@@ -1,6 +1,5 @@
 # move_base parameter file
-# Important changes: increased sim granularities, disabled holonomic robot
-# Editors: Andreas Wittmann, Maximilian Ecke, Tobias Woelfel, Yike Wang, Kai Stiens, Christoph Hennig
+
 
 TrajectoryPlannerROS:
   #Independent settings for the local costmap
