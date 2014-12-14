@@ -31,11 +31,11 @@ void control::odomCallback(const geometry_msgs::Twist::ConstPtr& msg)
 
     if(odom_steeringAngle > 2000)
     {
-        odom_steeringAngle = 1750;
+        odom_steeringAngle = 2000;
     }
     else if(odom_steeringAngle < 1000)
     {
-        odom_steeringAngle = 1250;
+        odom_steeringAngle = 1000;
     }
 }
 

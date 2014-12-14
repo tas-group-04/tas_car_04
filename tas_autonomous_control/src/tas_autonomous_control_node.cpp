@@ -1,4 +1,10 @@
 #include "control/control.h"
+#include <cmath>
+
+int MAX_SPEED = 1590;
+int MIN_SPEED = 1565;
+int SPEED_DEGRADE = 2;
+
 
 int main(int argc, char** argv)
 {
@@ -7,23 +13,11 @@ int main(int argc, char** argv)
 
     ros::Rate loop_rate(50);
 
-    //dummy number for old_control_mode at the beginning & control mode change flag
-    int16_t old_control_mode = 15;
-    bool control_mode_changed = false;
-
     while(ros::ok())
     {
-        if(old_control_mode != autonomous_control.control_Mode.data)
+        if(autonomous_control.control_Mode.data==0)
         {
-            control_mode_changed = true;
-        }
-        else
-        {
-            control_mode_changed = false;
-        }
-        if(autonomous_control.control_Mode.data==0 && control_mode_changed)
-        {
-            ROS_INFO("\033[38;5;148mManual Control Mode\033[39m");
+            ROS_INFO("Manually Control!");
         }
         else
         {
@@ -34,13 +28,25 @@ int main(int argc, char** argv)
             }
             else
             {
-                if(control_mode_changed)
-                {
-                    ROS_INFO("\033[38;5;148mChanged to Automatic Control Mode!\033[39m");
-                }
+                ROS_INFO("Automatic Control!");
                 if(autonomous_control.cmd_linearVelocity>0)
                 {
-                    autonomous_control.control_servo.x = 1550;
+                    float diff = abs(autonomous_control.cmd_steeringAngle - 1500);
+                    /*float diff;
+
+                    if(autonomous_control.cmd_steeringAngle >=1500){
+                        diff = autonomous_control.cmd_steeringAngle - 1500;
+                    }
+                    else{
+                        diff = 1500 - autonomous_control.cmd_steeringAngle;
+                    }*/
+
+                    if(diff != 0){
+                        autonomous_control.control_servo.x = MAX_SPEED-(MAX_SPEED-MIN_SPEED)*pow((diff/500),SPEED_DEGRADE);
+                    }
+                    else{
+                        autonomous_control.control_servo.x = MAX_SPEED;
+                    }
                 }
                 else if(autonomous_control.cmd_linearVelocity<0)
                 {
@@ -53,12 +59,14 @@ int main(int argc, char** argv)
 
                 autonomous_control.control_servo.y = autonomous_control.cmd_steeringAngle;
             }
+
             autonomous_control.control_servo_pub_.publish(autonomous_control.control_servo);
+
         }
-        old_control_mode = autonomous_control.control_Mode.data;
 
         ros::spinOnce();
         loop_rate.sleep();
+
     }
 
     return 0;
