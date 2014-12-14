@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export ROS_HOSTNAME=frericks
+export ROS_HOSTNAME=mstfszr
 export ROS_MASTER_URI=http://vettel:11311
 
 source /opt/ros/indigo/setup.bash

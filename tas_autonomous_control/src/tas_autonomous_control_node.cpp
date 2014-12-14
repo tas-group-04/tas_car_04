@@ -1,4 +1,10 @@
 #include "control/control.h"
+#include <cmath>
+
+int MAX_SPEED = 1590;
+int MIN_SPEED = 1565;
+int SPEED_DEGRADE = 2;
+
 
 int main(int argc, char** argv)
 {
@@ -25,14 +31,22 @@ int main(int argc, char** argv)
                 ROS_INFO("Automatic Control!");
                 if(autonomous_control.cmd_linearVelocity>0)
                 {
-                    float diff;
+                    float diff = abs(autonomous_control.cmd_steeringAngle - 1500);
+                    /*float diff;
+
                     if(autonomous_control.cmd_steeringAngle >=1500){
                         diff = autonomous_control.cmd_steeringAngle - 1500;
                     }
                     else{
                         diff = 1500 - autonomous_control.cmd_steeringAngle;
+                    }*/
+
+                    if(diff != 0){
+                        autonomous_control.control_servo.x = MAX_SPEED-(MAX_SPEED-MIN_SPEED)*pow((diff/500),SPEED_DEGRADE);
                     }
-                    autonomous_control.control_servo.x = 1590-(diff*diff)/2250000*225;
+                    else{
+                        autonomous_control.control_servo.x = MAX_SPEED;
+                    }
                 }
                 else if(autonomous_control.cmd_linearVelocity<0)
                 {
