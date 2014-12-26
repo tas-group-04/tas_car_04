@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tas_autonomous_control)
-
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -9,6 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
 )
+# Find the QtWidgets library
+find_package(Qt5Widgets)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -110,7 +115,7 @@ add_executable(tas_autonomous_control_node src/tas_autonomous_control_node.cpp s
 # add_dependencies(tas_autonomous_control_node tas_autonomous_control_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(tas_autonomous_control_node
+target_link_libraries(tas_autonomous_control_node Qt5::Widgets
   ${catkin_LIBRARIES}
 )
 

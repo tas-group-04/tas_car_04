@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int MAX_SPEED = 1590;
+int MAX_SPEED = 1650;
 int MIN_SPEED = 1565;
 int SPEED_DEGRADE = 2;
 float SLOPE, Y_INTERSECT;
@@ -46,8 +46,9 @@ double MAX_ANGLE, MIN_ANGLE, ANGLE_RESOLUTION, CAR_WIDTH, MAX_LOOK_AHEAD_DIST;
 double MIN_LOOK_AHEAD_DIST, DISTANCE_TOLERANCE, CURV_SECT_LENGTH, CURV_SECT_OVERLAP;
 
 //Calculations
-double MIN_CORNER_ANGLE, MAX_CORNER_ANGLE, MIN_CORNER_INDEX, MAX_CORNER_INDEX;
-double MIN_AREA_ANGLE, MAX_AREA_ANGLE, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SECT_SIZE, CURV_SECT_OVERLAP_SIZE;
+double MIN_CORNER_ANGLE, MAX_CORNER_ANGLE;
+int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SECT_SIZE, CURV_SECT_OVERLAP_SIZE;
+double MIN_AREA_ANGLE, MAX_AREA_ANGLE;
 vector<double> min_dist_lookup_table;
 sensor_msgs::LaserScan last_scan_message;
 
@@ -78,27 +79,39 @@ double calc_min_allowed_distance(double angle){
     }
 }
 
-/*double calc_curvature(float path[]){
-
-    return 0;
-}*/
-
-double clear_path_distance(){
+double clear_path_distance(control *autonomous_control){
     //Initialize min_obstacle distance
     double min_obstacle_distance = MAX_LOOK_AHEAD_DIST;
     for(int i=0; i<min_dist_lookup_table.size(); i++){
-        if(last_scan_message.ranges[MIN_AREA_INDEX+i] < min_dist_lookup_table.at(i)*(1-DISTANCE_TOLERANCE) &&
-                last_scan_message.ranges[MIN_AREA_INDEX+i] < min_obstacle_distance){
-            min_obstacle_distance = last_scan_message.ranges[MIN_AREA_INDEX+i]*sin(index_to_angle(MIN_AREA_INDEX+i));
+        if(autonomous_control->ranges[MIN_AREA_INDEX+i] < min_dist_lookup_table.at(i)*(1.0-DISTANCE_TOLERANCE) &&
+                autonomous_control->ranges[MIN_AREA_INDEX+i] < min_obstacle_distance){
+            min_obstacle_distance = autonomous_control->ranges[MIN_AREA_INDEX+i]*sin(index_to_angle(MIN_AREA_INDEX+i));
         }
     }
     cout << "Path clear up to " << min_obstacle_distance << " meters" << endl;
     return min_obstacle_distance;
 }
 
-void scanCallback(const sensor_msgs::LaserScan scan_msg){
-    last_scan_message = scan_msg;
+/*void scanCallback2(const sensor_msgs::LaserScan scan_msg){
+    //last_scan_message = scan_msg;
+    //Initialize min_obstacle distance
+    cout << "Scan callback called\n";
+    double min_obstacle_distance = MAX_LOOK_AHEAD_DIST;
+    for(int i=0; i<min_dist_lookup_table.size(); i++){
+        cout << i << endl;
+        if(scan_msg.ranges[MIN_AREA_INDEX+i] < min_dist_lookup_table.at(i)*(1-DISTANCE_TOLERANCE) &&
+                scan_msg.ranges[MIN_AREA_INDEX+i] < min_obstacle_distance){
+            min_obstacle_distance = scan_msg.ranges[MIN_AREA_INDEX+i]*sin(index_to_angle(MIN_AREA_INDEX+i));
+        }
+    }
+    cout << "Path clear up to " << min_obstacle_distance << " meters" << endl;
+    //return min_obstacle_distance;
+}*/
+
+double calc_curvature(control *autonomous_control){
+
 }
+
 
 
 int main(int argc, char** argv)
@@ -111,6 +124,13 @@ int main(int argc, char** argv)
     nh.param("min_speed", MIN_SPEED, 1565);
     nh.param("speed_degradation_order", SPEED_DEGRADE, 2);
 
+    //Subscribe to scan topic for velocity_controller
+    /*string topic;
+    if(nh.getParam("topic", topic) == false){
+        topic = "scan";
+    }
+    ros::Subscriber sub = nh.subscribe<sensor_msgs::LaserScan>("scan", 1, &scanCallback2);*/
+
     //bool only_manual_mode;
     //nh.param("only_manual_mode", only_manual_mode, false);
     //if(only_manual_mode == false)
@@ -122,8 +142,8 @@ int main(int argc, char** argv)
     //Begin velocity_controller
     //******************************************************************
 
-    nh.param("min_look_ahead_dist", MIN_LOOK_AHEAD_DIST, 5.0);
-    nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 1.0);
+    nh.param("min_look_ahead_dist", MIN_LOOK_AHEAD_DIST, 0.75);
+    nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 3.5);
     nh.param("distance_tolerance", DISTANCE_TOLERANCE, 0.015);
     nh.param("curvature_section_length", CURV_SECT_LENGTH, 1.0);
     nh.param("curvature_section_overlap", CURV_SECT_OVERLAP, 0.25);
@@ -165,13 +185,6 @@ int main(int argc, char** argv)
         min_dist_lookup_table.push_back(calc_min_allowed_distance(i));
     }
 
-    //Subscribe to scan topic for velocity_controller
-    string topic;
-    if(nh.getParam("topic", topic) == false){
-        topic = "scan";
-    }
-    ros::Subscriber sub = nh.subscribe(topic.c_str(), 1, scanCallback);
-
     for(int i=MIN_AREA_INDEX; i<=MAX_AREA_INDEX; i++){
         min_dist_lookup_table.push_back(calc_min_allowed_distance(i));
     }
@@ -190,6 +203,7 @@ int main(int argc, char** argv)
     int last_control_mode = 2;  //Dummy variable for mode outputting
     while(ros::ok())
     {
+        clear_path_distance(&autonomous_control);
         if(autonomous_control.control_Mode.data==0)
         {
             if(last_control_mode != 0)
@@ -212,8 +226,17 @@ int main(int argc, char** argv)
                 {
                     //BURADA DİREKSİYON AÇISINA GÖRE KONTROL EDİP EĞER GLOBAL PATH'TEN
                     //UZAKLAŞIYORSAK MAX SPEED'İ PUBLISH ETMEMEK LAZIM
-                    if(clear_path_distance() == MAX_LOOK_AHEAD_DIST){
+                    if(clear_path_distance(&autonomous_control) == MAX_LOOK_AHEAD_DIST && abs(autonomous_control.cmd_steeringAngle-1500)<=30){
                         speed = MAX_SPEED;
+                    }
+                    else if(clear_path_distance(&autonomous_control) >= MAX_LOOK_AHEAD_DIST-1 && abs(autonomous_control.cmd_steeringAngle-1500)<=30){
+                        speed = MAX_SPEED-25;
+                    }
+                    else if(clear_path_distance(&autonomous_control) >= MAX_LOOK_AHEAD_DIST-2 && abs(autonomous_control.cmd_steeringAngle-1500)<=30){
+                        speed = MAX_SPEED-50;
+                    }
+                    else if(clear_path_distance(&autonomous_control) >= MAX_LOOK_AHEAD_DIST-3 && abs(autonomous_control.cmd_steeringAngle-1500)<=30){
+                        speed = MAX_SPEED-75;
                     }
                     else{
                         diff = abs(autonomous_control.cmd_steeringAngle - 1500);
