@@ -1,21 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(tas_autonomous_control)
-# Find includes in corresponding build directories
-# set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed.
-# set(CMAKE_AUTOMOC ON)
+project(adaptive_velocity_controller)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
   roscpp
+  rospy
   std_msgs
+  dynamic_reconfigure
 )
-# Find the QtWidgets library
-FIND_PACKAGE(Qt4 REQUIRED)
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+#add dynamic reconfigure api
+#find_package(catkin REQUIRED dynamic_reconfigure)
+generate_dynamic_reconfigure_options(cfg/AVC_dyn.cfg)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -74,7 +72,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   geometry_msgs#   std_msgs
+#   std_msgs
 # )
 
 ###################################
@@ -88,8 +86,8 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES tas_autonomous_control
-#  CATKIN_DEPENDS geometry_msgs roscpp std_msgs
+#  LIBRARIES adaptive_velocity_controller
+#  CATKIN_DEPENDS roscpp std_msgs
 #  DEPENDS system_lib
 )
 
@@ -100,25 +98,27 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
+include_directories(include 
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(tas_autonomous_control
-#   src/${PROJECT_NAME}/tas_autonomous_control.cpp
+# add_library(adaptive_velocity_controller
+#   src/${PROJECT_NAME}/adaptive_velocity_controller.cpp
 # )
 
 ## Declare a cpp executable
-add_executable(tas_autonomous_control_node src/tas_autonomous_control_node.cpp src/control/control.cpp)
+add_executable(adaptive_velocity_controller src/adaptive_velocity_controller.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(tas_autonomous_control_node tas_autonomous_control_generate_messages_cpp)
+# add_dependencies(adaptive_velocity_controller_node adaptive_velocity_controller_generate_messages_cpp)
+# make sure configure headers are built before any node using them
+add_dependencies(adaptive_velocity_controller ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(tas_autonomous_control_node
-  ${catkin_LIBRARIES} ${QT_LIBRARIES}
+target_link_libraries(adaptive_velocity_controller
+   ${catkin_LIBRARIES}
 )
 
 #############
@@ -136,7 +136,7 @@ target_link_libraries(tas_autonomous_control_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS tas_autonomous_control tas_autonomous_control_node
+# install(TARGETS adaptive_velocity_controller adaptive_velocity_controller_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -161,7 +161,7 @@ target_link_libraries(tas_autonomous_control_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_tas_autonomous_control.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_adaptive_velocity_controller.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

@@ -41,7 +41,6 @@ public:
     //tmp
     ros::Subscriber laser_sub_;
     ros::Subscriber pose_sub_;
-    ros::Subscriber global_path_sub;
 
     std_msgs::Int16 control_Brake; /* flag for brake */
     std_msgs::Int16 control_Mode; /* flag for car mode: manual or autonomous */
@@ -57,8 +56,13 @@ public:
     geometry_msgs::Vector3 control_servo;
     std::vector<myscanData> scanValues;
     float ranges[720];  //Read all ranges Mustafa
-    std::vector<float> global_x;
-    std::vector<float> global_y;
+    std::vector<float> global_x;    //Global path x positions Mustafa
+    std::vector<float> global_y;    //Global path y positions Mustafa
+    int nearestPointIndex;          //Index of the nearest global point to the current position Mustafa
+    float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
+    //Subscriptions Mustafa
+    ros::Subscriber global_path_sub;
+    ros::Subscriber local_path_sub;
 
 private:
 

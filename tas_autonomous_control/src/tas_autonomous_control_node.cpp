@@ -33,14 +33,6 @@ int cmd_vel_converter(){
 }
 
 
-
-
-
-
-
-
-
-
 //Parameters
 double MAX_ANGLE, MIN_ANGLE, ANGLE_RESOLUTION, CAR_WIDTH, MAX_LOOK_AHEAD_DIST;
 double MIN_LOOK_AHEAD_DIST, DISTANCE_TOLERANCE, CURV_SECT_LENGTH, CURV_SECT_OVERLAP;
@@ -109,7 +101,7 @@ double clear_path_distance(control *autonomous_control){
 }*/
 
 double calc_curvature(control *autonomous_control){
-
+    return 0.0;
 }
 
 
@@ -145,7 +137,7 @@ int main(int argc, char** argv)
     nh.param("min_look_ahead_dist", MIN_LOOK_AHEAD_DIST, 0.75);
     nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 3.5);
     nh.param("distance_tolerance", DISTANCE_TOLERANCE, 0.015);
-    nh.param("curvature_section_length", CURV_SECT_LENGTH, 1.0);
+    nh.param("curvature_section_length", CURV_SECT_LENGTH, 2.5);
     nh.param("curvature_section_overlap", CURV_SECT_OVERLAP, 0.25);
 
     std::string key;
