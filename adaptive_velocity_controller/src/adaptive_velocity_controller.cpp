@@ -86,6 +86,14 @@ void adaptiveVelocityController::wiiCommunicationCallback(const std_msgs::Int16M
 //Local Plan Callback Mustafa
 void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPtr& msg)
 {
+
+    //TODO 0.5 = granularity olacak
+    double LOCAL_PLAN_LENGTH = 0.25 * msg->poses.size();
+    if(LOCAL_PLAN_LENGTH == 0){
+        ROS_ERROR("Local plan is empty!");
+        return;
+    }
+
     local_x.clear();
     local_y.clear();
 
@@ -94,6 +102,8 @@ void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPt
         local_x.push_back(msg->poses[i].pose.position.x);
         local_y.push_back(msg->poses[i].pose.position.y);
     }
+
+    local_plan_curvature = sqrt(exp2(local_x[local_x.size()-1]-local_x[0])+exp2(local_y[local_y.size()-1]-local_y[0]))/LOCAL_PLAN_LENGTH;
 }
 
 //Global Plan Callback
@@ -313,7 +323,7 @@ int main(int argc, char** argv)
     }
     else{
         sim_granularity = 0.25;
-        ROS_INFO("Simulation granularity not found, set to 0.25 by default.");
+        ROS_WARN("Simulation granularity not found, set to 0.25 by default.");
     }
 
     adaptiveVelocityController vC;

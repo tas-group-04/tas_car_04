@@ -30,6 +30,8 @@ public:
     std::vector<float> global_y;    //Global path y positions Mustafa
     std::vector<float> local_x;     //Local path x positions Mustafa
     std::vector<float> local_y;     //Local path y positions Mustafa
+    double local_plan_curvature;
+    double global_plan_curvature;
     int nearestPointIndex;          //Index of the nearest global point to the current position Mustafa
     float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
     std_msgs::Int16 control_Mode;
