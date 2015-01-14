@@ -38,12 +38,17 @@ public:
     ros::Subscriber cmd_sub_;
     ros::Subscriber odom_sub_;
     ros::Subscriber wii_communication_sub;
+
+    ros::Subscriber avc_sub;
+
     //tmp
     ros::Subscriber laser_sub_;
     ros::Subscriber pose_sub_;
 
     std_msgs::Int16 control_Brake; /* flag for brake */
     std_msgs::Int16 control_Mode; /* flag for car mode: manual or autonomous */
+
+    int avc_vel;
 
     double cmd_linearVelocity;
     double cmd_angularVelocity;
@@ -56,19 +61,19 @@ public:
     geometry_msgs::Vector3 control_servo;
     std::vector<myscanData> scanValues;
     float ranges[720];  //Read all ranges Mustafa
-    std::vector<float> global_x;    //Global path x positions Mustafa
+    /*td::vector<float> global_x;    //Global path x positions Mustafa
     std::vector<float> global_y;    //Global path y positions Mustafa
     int nearestPointIndex;          //Index of the nearest global point to the current position Mustafa
-    float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
     //Subscriptions Mustafa
     ros::Subscriber global_path_sub;
-    ros::Subscriber local_path_sub;
+    ros::Subscriber local_path_sub;*/
 
 private:
 
     float pos_x;
     float pos_y;
 
+    void AVCCallback(const std_msgs::Int16::ConstPtr& msg);
 
     /* subscribe the cmd message from move_base */
 
@@ -82,10 +87,6 @@ private:
 
     //tmp
     void scanCallback(const sensor_msgs::LaserScan laser);
-    void poseCallback(const geometry_msgs::PoseWithCovarianceStamped p);
-
-    //Subscribe to global plan Mustafa
-    void globalPlanCallback(const nav_msgs::Path::ConstPtr& msg);
 };
 
 #endif // CONTROL_H

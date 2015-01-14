@@ -10,6 +10,7 @@
 #include "std_msgs/String.h"
 #include "sensor_msgs/LaserScan.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
+#include "geometry_msgs/Twist.h"
 #include "hokuyo_node/hokuyo.h"
 #include "hokuyo_node/HokuyoConfig.h"
 #include "nav_msgs/Path.h"
@@ -30,14 +31,15 @@ public:
     std::vector<float> global_y;    //Global path y positions Mustafa
     std::vector<float> local_x;     //Local path x positions Mustafa
     std::vector<float> local_y;     //Local path y positions Mustafa
-    double local_plan_curvature;
-    double global_plan_curvature;
     int nearestPointIndex;          //Index of the nearest global point to the current position Mustafa
-    float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
     std_msgs::Int16 control_Mode;
+    //Publisher
+    ros::Publisher avc_pub;
+    std_msgs::Int16 avc_vel_msg;
     //Subscriptions Mustafa
     ros::Subscriber global_path_sub;
     ros::Subscriber local_path_sub;
+    ros::Subscriber cmd_sub;
     ros::Subscriber laser_sub_;
     ros::Subscriber pose_sub_;
     ros::Subscriber wii_communication_sub;
@@ -48,7 +50,8 @@ public:
 
     void computeLookupTable();
     double clear_path_distance();
-    double calc_curvature();
+    //double calc_curvature();
+    //float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
     double calc_min_allowed_distance(double angle);
     double calc_min_allowed_distance(int index);
     double index_to_angle(int index);
@@ -62,6 +65,15 @@ private:
     float pos_x;
     float pos_y;
 
+    float cmd_vel;
+
+    float global_plan_granularity, local_plan_granularity;
+
+    double local_plan_curvature;
+    double global_plan_curvature;
+
+    double min_obstacle_distance;
+
     void scanCallback(const sensor_msgs::LaserScan msg);
     void poseCallback(const geometry_msgs::PoseWithCovarianceStamped p);
 
@@ -69,6 +81,8 @@ private:
     void globalPlanCallback(const nav_msgs::Path::ConstPtr& msg);
 
     void localPlanCallback(const nav_msgs::Path::ConstPtr& msg);
+
+    void cmdCallback(const geometry_msgs::Twist::ConstPtr& msg);
 
     void wiiCommunicationCallback(const std_msgs::Int16MultiArray::ConstPtr& msg);
 

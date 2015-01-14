@@ -11,24 +11,20 @@ control::control()
 {
     control_servo_pub_ = nh_.advertise<geometry_msgs::Vector3>("servo", 1);
 
+    //Adaptive velocity control subscriber Mustafa
+    avc_sub = nh_.subscribe<std_msgs::Int16>("avc_vel", 1, &control::AVCCallback, this);
+
     cmd_sub_ = nh_.subscribe<geometry_msgs::Twist>("cmd_vel", 1000, &control::cmdCallback,this);
 
     odom_sub_ = nh_.subscribe<geometry_msgs::Twist>("odom_vel",1000,&control::odomCallback,this);
 
-    //Global Plan subscriber Mustafa
-    global_path_sub = nh_.subscribe<nav_msgs::Path>("global_plan",1,&control::globalPlanCallback,this);
-
-    //Local Plan subscriber Mustafa
-    local_path_sub = nh_.subscribe<nav_msgs::Path>("global_plan",1,&control::globalPlanCallback,this);
-
     //Initialize nearest point index to -1 for checking
-    nearestPointIndex = -1;
+    //nearestPointIndex = -1;
 
 
 
     // tmp
     laser_sub_ = nh_.subscribe<sensor_msgs::LaserScan>("scan", 1, &control::scanCallback,this);
-    pose_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>("amcl_pose", 1, &control::poseCallback,this);
     //
     wii_communication_sub = nh_.subscribe<std_msgs::Int16MultiArray>("wii_communication",1000,&control::wiiCommunicationCallback,this);
 
@@ -41,6 +37,14 @@ control::control()
     //    previous_ServoMsg.y = 1500;
 
 }
+
+
+void control::AVCCallback(const std_msgs::Int16::ConstPtr& msg){
+    avc_vel = msg->data;
+}
+
+
+
 // We can subscribe to the odom here and get some feedback signals so later we can build our controllers
 void control::odomCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
@@ -88,21 +92,6 @@ void control::wiiCommunicationCallback(const std_msgs::Int16MultiArray::ConstPtr
     control_Brake.data = msg->data[1];
 }
 
-//Global Plan Callback Mustafa
-void control::globalPlanCallback(const nav_msgs::Path::ConstPtr& msg)
-{
-    global_x.clear();
-    global_y.clear();
-
-    for (unsigned int i=0; i<msg->poses.size(); i++)
-    {
-        global_x.push_back(msg->poses[i].pose.position.x);
-        global_y.push_back(msg->poses[i].pose.position.y);
-    }
-}
-
-
-
 //geometry_msgs::Vector3 control::P_Controller()
 //{
 //    current_ServoMsg.x = previous_ServoMsg.x + Fp*(cmd_linearVelocity - odom_linearVelocity);
@@ -132,52 +121,6 @@ void control::globalPlanCallback(const nav_msgs::Path::ConstPtr& msg)
 
 //    return current_ServoMsg;
 //}
-
-
-//Pose callback with calculation of the nearest global path point Mustafa
-void control::poseCallback(const geometry_msgs::PoseWithCovarianceStamped p){
-    pos_x = p.pose.pose.position.x;
-    pos_y = p.pose.pose.position.y;
-    double min_dist = 10^6;
-    unsigned int min_dist_index;
-    double dist;
-    if(global_x.size() == global_y.size() && global_x.size()>0){
-        for(unsigned int i=0; i<global_x.size(); i++){
-            dist = sqrt( exp2(pos_x-global_x.at(i)) + exp2(pos_y-global_y.at(i)) );
-            if(dist < min_dist){
-                min_dist = dist;
-                min_dist_index = i;
-            }
-            //If we moved to a point which is at least 1 meter farther away from the minimum distance, break.
-            //If there is a u turn to the same point, this could cause bugs
-            if(dist >= min_dist+1)
-                break;
-        }
-        nearestPointIndex = min_dist_index;
-    }
-}
-
-//Curvature measure function Mustafa
-float control::curvatureMeasure(){
-    int CURV_SECT_SIZE_ = 100;
-    float CURV_SECT_LENGTH_ = 2.5;
-    if(nearestPointIndex == -1)
-        return -1;
-    if(nearestPointIndex+CURV_SECT_SIZE_ >= global_x.size()){
-//        nearestPointIndex = global_x.size()-CURV_SECT_SIZE_-1;
-        ROS_ERROR("Curvature calculation section goes beyond the goal, no curvature calculated");
-        return -1;
-    }
-    float x_diff = global_x.at(nearestPointIndex) != global_x.at(nearestPointIndex+CURV_SECT_SIZE_);
-    float y_diff = global_y.at(nearestPointIndex) != global_y.at(nearestPointIndex+CURV_SECT_SIZE_);
-    if(x_diff==0 && y_diff==0){
-        ROS_ERROR("Global path makes a self loop in this section, no curvature calculated");
-        return -1;
-    }
-    else{
-        return sqrt(exp2(x_diff)+exp2(y_diff))/CURV_SECT_LENGTH_;
-    }
-}
 
 void control::scanCallback(const sensor_msgs::LaserScan laser)
 {
