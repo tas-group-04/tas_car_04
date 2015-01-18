@@ -4,8 +4,8 @@
   <master auto="start"/>
   <param name="/use_sim_time" value="false"/>
   
-  <!-- Run map server
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find tas)/launch/config/map_server/LSR_3.yaml"/> -->
+  <!-- Run map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find tas)/launch/config/map_server/LSR_3.yaml"/> 
 
    <!-- Run AMCL -->
   <node pkg="amcl" type="amcl" name="amcl" respawn="true">
@@ -34,8 +34,8 @@
 	  <param name="max_particles" value="5000"/>
 	  <param name="kld_err" value="0.01"/>
 	  <param name="kld_z" value="0.99"/>
-	  <param name="update_min_d" value="0.2"/>
-	  <param name="update_min_a" value="0.5"/>
+	  <param name="update_min_d" value="0.02"/>
+	  <param name="update_min_a" value="0.05"/>
 	  <param name="resample_interval" value="2"/>
 	  <param name="transform_tolerance" value="0.1"/>
 	  <param name="recovery_alpha_slow" value="0.0"/>
@@ -77,8 +77,10 @@
   </node>
 
   <!-- Run trajectory control -->
-  <node pkg = "tas_autonomous_control" type="tas_autonomous_control_node" name="tas_autonomous_control_node" output="screen"/>
-
+  <!-- <node pkg = "tas_autonomous_control" type="tas_autonomous_control_node" name="tas_autonomous_control_node" output="screen"/> -->
+<!-- Run parking control --><node pkg="parallel_parking" type="parallel_parking_node" name="parallel_parking_node" output="screen"/>
+<!-- <node name="park_navigation" pkg="park_navigation" type="park_navigation_node" output="screen"/> -->
+ <node pkg="wifi_information" type="node_wifi_lateration" name="node_wifi_lateration" output="screen" /> 
   <!-- Run rviz -->
   <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find rc_car_drift)/rviz_config.vcg">
 </node-->

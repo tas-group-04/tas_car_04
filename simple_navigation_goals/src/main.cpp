@@ -48,15 +48,6 @@ int main(int argc, char** argv){
     std::vector<geometry_msgs::Pose> waypoints; // vector of goals, with position and orientation
 
     geometry_msgs::Pose waypoint1;
-    /*waypoint1.position.x = 22.0;
-    waypoint1.position.y = 10.75;
-    waypoint1.position.z = 0.000;
-    waypoint1.orientation.x = 0.000;
-    waypoint1.orientation.y = 0.000;
-    waypoint1.orientation.z = 0;
-    waypoint1.orientation.w = 1;
-    waypoints.push_back(waypoint1);*/
-
 
     ifstream file;
     file.open(QDir::homePath().append("/catkin_ws/src/tas_car_04/goals.txt").toAscii());
@@ -66,6 +57,7 @@ int main(int argc, char** argv){
 
     int num=0;
 
+    //Read the goals from goals.txt file to construct the global plan
     while(!file.eof()){
         getline(file,s_line);
         line = s_line.c_str();
@@ -104,6 +96,8 @@ int main(int argc, char** argv){
             waypoints.push_back(waypoint1);
         }
     }
+    file.close();
+
 
     for(int i=0; i<waypoints.size(); i++){
         ROS_INFO("Goal %d: x=%f, y=%f, w=%f", i, waypoints.at(i).position.x, waypoints.at(i).position.y, waypoints.at(i).orientation.w);

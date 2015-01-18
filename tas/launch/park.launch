@@ -13,8 +13,8 @@
   <!-- Set up move base package-->
   <include file="$(find tas)/launch/move_base_park.launch" />
 
-  <!-- Run rviz -->
+  <!-- Run rviz 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tas)/launch/config/rviz/tas_rviz.rviz" />
-
+  -->
 
 </launch>

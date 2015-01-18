@@ -17,4 +17,8 @@
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tas)/launch/config/rviz/tas_rviz.rviz" />
 
 
+
+  
+
+
 </launch>

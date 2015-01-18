@@ -1,4 +1,5 @@
 #include "wii_lib.h"
+#include <iostream>
 
 wii_lib::wii_lib()
 {
@@ -60,6 +61,24 @@ void wii_lib::wiiStateCallback(const wiimote::State::ConstPtr& wiiState)
             /* mapping analog nunchuk state to servo command*/
             servo.x = 1500 + SCALE_FAKTOR_THROTTLE*wiiState.get()->nunchuk_joystick_zeroed[1];
             servo.y = 1500 + SCALE_FAKTOR_STEERING*wiiState.get()->nunchuk_joystick_zeroed[0];
+            /*if(wiiState.get()->nunchuk_joystick_zeroed[1] > 0){
+                servo.x = 1545;
+            }
+            else if(wiiState.get()->nunchuk_joystick_zeroed[1] < 0){
+                servo.x = 1545;
+            }
+            else{
+                servo.x = 1500;
+            }
+            if(wiiState.get()->nunchuk_joystick_zeroed[0] > 0){
+                servo.y = 2000;
+            }
+            else if(wiiState.get()->nunchuk_joystick_zeroed[0] < 0){
+                servo.y = 1000;
+            }
+            else{
+                servo.y = 1500;
+            }*/
         }
 
         wii_servo_pub_.publish(servo); /*publish servo messages to arduino*/

@@ -25,6 +25,7 @@
     <param name="intensity" type="bool" value="false"/>
   </node>
 
+
  <!-- Run laserscanner at the back -->
   <node name="hokuyo_back" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
     <!-- Starts up faster, but timestamps will be inaccurate. --> 
@@ -33,6 +34,7 @@
     <param name="port" type="string" value="/dev/hokuyo_back"/> 
     <param name="intensity" type="bool" value="false"/>
     <remap from="scan" to="scan_back" />
+    <param name="frame_id" value="laser_back"/>
   </node>
 
 
