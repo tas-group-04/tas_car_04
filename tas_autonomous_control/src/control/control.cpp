@@ -5,25 +5,20 @@ int las_count = 0;
 control::control()
 {
     control_servo_pub_ = nh_.advertise<geometry_msgs::Vector3>("servo", 1);
-    //Adaptive velocity control subscriber Mustafa
+    //Adaptive velocity controller subscriber Mustafa
     avc_sub = nh_.subscribe<std_msgs::Int16>("avc_vel", 1, &control::AVCCallback, this);
     cmd_sub_ = nh_.subscribe<geometry_msgs::Twist>("cmd_vel", 1000, &control::cmdCallback,this);
     odom_sub_ = nh_.subscribe<geometry_msgs::Twist>("odom_vel",1000,&control::odomCallback,this);
-    //Initialize nearest point index to -1 for checking
-    //nearestPointIndex = -1;
-    // tmp
-    //laser_sub_ = nh_.subscribe<sensor_msgs::LaserScan>("scan", 1, &control::scanCallback,this);
-    //
     wii_communication_sub = nh_.subscribe<std_msgs::Int16MultiArray>("wii_communication",1000,&control::wiiCommunicationCallback,this);
-    // Fp = 10;// need to test! defult:125
-    // current_ServoMsg.x = 1500;
-    // current_ServoMsg.y = 1500;
-    // previous_ServoMsg.x = 1500;
-    // previous_ServoMsg.y = 1500;
 }
+
+//Adaptive velocity controller callback
 void control::AVCCallback(const std_msgs::Int16::ConstPtr& msg){
+    //Get the servo velocity from the adaptive velocity controller
     avc_vel = msg->data;
 }
+
+
 // We can subscribe to the odom here and get some feedback signals so later we can build our controllers
 void control::odomCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
@@ -62,26 +57,3 @@ void control::wiiCommunicationCallback(const std_msgs::Int16MultiArray::ConstPtr
     control_Mode.data = msg->data[0];
     control_Brake.data = msg->data[1];
 }
-//geometry_msgs::Vector3 control::P_Controller()
-//{
-// current_ServoMsg.x = previous_ServoMsg.x + Fp*(cmd_linearVelocity - odom_linearVelocity);
-// current_ServoMsg.y = cmd_steeringAngle;
-// if(current_ServoMsg.x > 1580)
-// {
-// current_ServoMsg.x = 1580;
-// }
-// else if(current_ServoMsg.x < 1300)
-// {
-// current_ServoMsg.x = 1300;
-// }
-// if(current_ServoMsg.y > 2000)
-// {
-// current_ServoMsg.y = 2000;
-// }
-// else if(current_ServoMsg.y < 1000)
-// {
-// current_ServoMsg.y = 1000;
-// }
-// previous_ServoMsg = current_ServoMsg;
-// return current_ServoMsg;
-//}

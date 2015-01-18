@@ -27,13 +27,9 @@ public:
     //~adaptiveVelocityController();
     ros::NodeHandle nh_;
     float ranges[720];  //Read all ranges Mustafa
-    std::vector<float> global_x;    //Global path x positions Mustafa
-    std::vector<float> global_y;    //Global path y positions Mustafa
-    std::vector<float> local_x;     //Local path x positions Mustafa
-    std::vector<float> local_y;     //Local path y positions Mustafa
     int nearestPointIndex;          //Index of the nearest global point to the current position Mustafa
     std_msgs::Int16 control_Mode;
-    //Publisher
+    //Publishers Mustafa
     ros::Publisher avc_pub;
     std_msgs::Int16 avc_vel_msg;
     //Subscriptions Mustafa
@@ -44,14 +40,12 @@ public:
     ros::Subscriber pose_sub_;
     ros::Subscriber wii_communication_sub;
     double MIN_CORNER_ANGLE, MAX_CORNER_ANGLE;
-    int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SECT_SIZE, CURV_SECT_OVERLAP_SIZE;
+    int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX;
     double MIN_AREA_ANGLE, MAX_AREA_ANGLE;
     std::vector<double> min_dist_lookup_table;
 
     void computeLookupTable();
     double clear_path_distance();
-    //double calc_curvature();
-    //float curvatureMeasure();    //Calculate curvature of the path in front Mustafa
     double calc_min_allowed_distance(double angle);
     double calc_min_allowed_distance(int index);
     double index_to_angle(int index);

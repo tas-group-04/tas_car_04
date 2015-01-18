@@ -19,17 +19,25 @@ bool ignore_local_planner_vel_cmd;
 int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SECT_SIZE, CURV_SECT_OVERLAP_SIZE;
 double MIN_AREA_ANGLE, MAX_AREA_ANGLE;
 vector<double> min_dist_lookup_table;*/
-sensor_msgs::LaserScan last_scan_message;
 
 int MAX_SPEED = 1605;
 int MIN_SPEED = 1565;
 double EXP_L = 2;
 double EXP_G = 2;
-double EXP_P = 2;
 double EXP_C = 2;
 float SLOPE, Y_INTERSECT;
 
 int adaptiveVelocityController::cmd_vel_converter(){
+    /*Function which maps the cmd_vel message from move_base to servo command range.
+     * The range of servo command is between MIN_SPEED and MAX_SPEED parameters.
+     * The function can ignore the velocity commands from move base. Depending on the
+     * local plan curvature, global plan curvature and minimum obstacle distance
+     * the velocity is adaptively changed. The more linear the global and local plans are and
+     * the more is the distance to the nearest obstacle (minimum_obstacle_distance), the higher
+     * becomes the servo velocity command. The weighting factor of each component (local plan curvature,
+     * global plan curvature and clear path ratio to MAX_LOOK_AHEAD_DIST) is calculated by taking the EXP_L, EXP_G and EXP_C
+     * power of each factor. Each factor is a number between zero and one.*/
+
     float max_vel, min_vel;
     int counter = 0;
     double speed;
@@ -46,11 +54,10 @@ int adaptiveVelocityController::cmd_vel_converter(){
                 ROS_FATAL("Move base node not active. Adaptive velocity control node will shut down");
                 return 1;
             }
-            /*if(auto_control->control_Mode.data = 0){
-            return 2;
-        }*/
         }
         if(max_vel != min_vel){
+            /* Map the min_vel_x and max_vel_x range of move_base to the MIN_SPEED and MAX_SPEED range
+            of servo commands*/
             SLOPE = (MAX_SPEED - MIN_SPEED)/(max_vel-min_vel);
             Y_INTERSECT = MAX_SPEED - max_vel*SLOPE;
             speed = SLOPE*cmd_vel + Y_INTERSECT;
@@ -75,7 +82,7 @@ adaptiveVelocityController::adaptiveVelocityController()
     ignore_local_planner_vel_cmd = false;
 
     global_plan_granularity = 0.025;
-    local_plan_granularity = 0.075;
+    local_plan_granularity = 0.025;
 
     //Ignore the curvatures and min_obstacle_dist at the beginning
     local_plan_curvature = 1;
@@ -112,36 +119,22 @@ void adaptiveVelocityController::wiiCommunicationCallback(const std_msgs::Int16M
     //control_Brake.data = msg->data[1];
 }
 
-//Local Plan Callback Mustafa
+//Local Plan Callback
 void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPtr& msg)
 {
+    //Calculate the local plan curvature in this callback
     double LOCAL_PLAN_LENGTH = local_plan_granularity * msg->poses.size();
     if(LOCAL_PLAN_LENGTH == 0){
         ROS_ERROR("Local plan is empty, local plan curvature is ignored!");
         local_plan_curvature = 1;
         return;
     }
-    /*local_x.clear();
-    local_y.clear();
-
-    for(unsigned int i=0; i<msg->poses.size(); i++)
-    {
-        local_x.push_back(msg->poses[i].pose.position.x);
-        local_y.push_back(msg->poses[i].pose.position.y);
-    }
-
-    float x_diff = local_x[local_x.size()-1]-local_x[0];
-    float y_diff = local_y[local_y.size()-1]-local_y[0];*/
 
     double x_diff = msg->poses[msg->poses.size()-1].pose.position.x - msg->poses[0].pose.position.x;
     double y_diff = msg->poses[msg->poses.size()-1].pose.position.y - msg->poses[0].pose.position.y;
 
     local_plan_curvature = sqrt(x_diff*x_diff + y_diff*y_diff)/LOCAL_PLAN_LENGTH;
-    /*if(local_plan_curvature == 0 || local_plan_curvature>1){
-        for(int i=0; i<msg->poses.size(); i++){
-            std::cout << "X1: " << msg->poses[0].pose.position.x << " X2: " << msg->poses[msg->poses.size()-1].pose.position.x << " Y1: " << msg->poses[0].pose.position.y << " Y2: " << msg->poses[msg->poses.size()-1].pose.position.y << std::endl;
-        }
-    }*/
+
     if(local_plan_curvature == 0){
         ROS_WARN("Local plan curvature is 0 and ignored");
         local_plan_curvature = 1;
@@ -151,17 +144,11 @@ void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPt
 //Global Plan Callback
 void adaptiveVelocityController::globalPlanCallback(const nav_msgs::Path::ConstPtr& msg)
 {
-    /*global_x.clear();
-    global_y.clear();
-
-    for (unsigned int i=0; i<msg->poses.size(); i++)
-    {
-        global_x.push_back(msg->poses[i].pose.position.x);
-        global_y.push_back(msg->poses[i].pose.position.y);
-    }*/
     double min_dist = 10^6;
     unsigned int min_dist_index = 0;
     double dist, x_diff, y_diff;
+
+    //Calculate the index of the point in global_plan to which the car is closest at that time instance
     for(unsigned int i=0; i<msg->poses.size(); i++){
         x_diff = pos_x - msg->poses[i].pose.position.x;
         y_diff = pos_y - msg->poses[i].pose.position.y;
@@ -177,7 +164,7 @@ void adaptiveVelocityController::globalPlanCallback(const nav_msgs::Path::ConstP
     }
     nearestPointIndex = min_dist_index;
 
-    //Measuring curvature for the way in front
+    //Measure the curvature for the way in front. It is calculated for the path in front with length equal to MAX_LOOK_AHEAD_DIST
     int CURV_SECT_SIZE_ = MAX_LOOK_AHEAD_DIST / global_plan_granularity;
     float CURV_SECT_LENGTH_ = MAX_LOOK_AHEAD_DIST;
     if(nearestPointIndex+CURV_SECT_SIZE_ >= msg->poses.size()){
@@ -204,44 +191,25 @@ void adaptiveVelocityController::globalPlanCallback(const nav_msgs::Path::ConstP
 
 void adaptiveVelocityController::cmdCallback(const geometry_msgs::Twist::ConstPtr& msg)
 {
+    //Callback for getting the velocity commands from move_base
     cmd_vel = msg->linear.x;
 }
 
-//Pose callback with calculation of the nearest global path point Mustafa
 void adaptiveVelocityController::poseCallback(const geometry_msgs::PoseWithCovarianceStamped p){
+    //Pose callback
     pos_x = p.pose.pose.position.x;
     pos_y = p.pose.pose.position.y;
 }
 
-/*//Curvature measure function Mustafa
-float adaptiveVelocityController::curvatureMeasure(){
-    int CURV_SECT_SIZE_ = 100;
-    float CURV_SECT_LENGTH_ = 2.5;
-    if(nearestPointIndex == -1)
-        return -1;
-    if(nearestPointIndex+CURV_SECT_SIZE_ >= global_x.size()){
-        //        nearestPointIndex = global_x.size()-CURV_SECT_SIZE_-1;
-        ROS_ERROR("Curvature calculation section goes beyond the goal, no curvature calculated");
-        return -1;
-    }
-    float x_diff = global_x.at(nearestPointIndex) - global_x.at(nearestPointIndex+CURV_SECT_SIZE_);
-    float y_diff = global_y.at(nearestPointIndex) - global_y.at(nearestPointIndex+CURV_SECT_SIZE_);
-    if(x_diff==0 && y_diff==0){
-        ROS_ERROR("Global path makes a self loop in this section, no curvature calculated");
-        return -1;
-    }
-    else{
-        return sqrt(x_diff*x_diff + y_diff*y_diff)/CURV_SECT_LENGTH_;
-    }
-}*/
-
 void adaptiveVelocityController::scanCallback(const sensor_msgs::LaserScan msg)
 {
+    /* Callback for laser scan. In this callback, the laser scans are stored in a vector
+     * for computational purposes and the minimum obstacle distance is calculated, which
+     * corresponds to the distance of the nearest obstacle.*/
     //TODO: ranges variable may be deleted if not needed by clearpathdistance function
     for (unsigned int i=0; i<720;i++)
     {
         ranges[i] = msg.ranges[i];
-        // std::cout << "self_time_stamp: " << endl;
     }
     min_obstacle_distance = MAX_LOOK_AHEAD_DIST;
     for(int i=0; i<min_dist_lookup_table.size(); i++){
@@ -253,14 +221,18 @@ void adaptiveVelocityController::scanCallback(const sensor_msgs::LaserScan msg)
 }
 
 int adaptiveVelocityController::angle_to_index(double angle){
+    //Convert laser measurement angle to the corresponding array index
     return (angle-MIN_ANGLE)/ANGLE_RESOLUTION;
 }
 
 double adaptiveVelocityController::index_to_angle(int index){
+    //Convert laser measurement array index to the corresponding angle
     return index*ANGLE_RESOLUTION-MIN_ANGLE;
 }
 
 double adaptiveVelocityController::calc_min_allowed_distance(int index){
+    /*Calculate the minimum allowed distance using the index of the laser measurement array
+     * see calc_min_allowed_distance(double angle) function for reference*/
     if(index<=MIN_CORNER_INDEX || index>=MAX_CORNER_INDEX){
         return (CAR_WIDTH/2)/abs(cos(index_to_angle(index)));
     }
@@ -270,6 +242,9 @@ double adaptiveVelocityController::calc_min_allowed_distance(int index){
 }
 
 double adaptiveVelocityController::calc_min_allowed_distance(double angle){
+    /*Calculate the distance which signs that at that angle there is no obstacle.
+     * If the laser measurement at the corresponding angle is less than the minimum allowed distance
+     * this information is then used to sense there is an object in the virtual lane*/
     if(angle<=MIN_CORNER_ANGLE || angle>=MAX_CORNER_ANGLE){
         return (CAR_WIDTH/2)/abs(cos(angle));
     }
@@ -279,7 +254,9 @@ double adaptiveVelocityController::calc_min_allowed_distance(double angle){
 }
 
 double adaptiveVelocityController::clear_path_distance(){
-    //Initialize min_obstacle distance
+    //Function for computing the clear path distance in front of the car.
+    //This function is unused and is here for reference and debugging purposes
+
     min_obstacle_distance = MAX_LOOK_AHEAD_DIST;
     for(int i=0; i<min_dist_lookup_table.size(); i++){
         if(ranges[MIN_AREA_INDEX+i] < min_dist_lookup_table.at(i)*(1.0-DISTANCE_TOLERANCE) &&
@@ -292,6 +269,8 @@ double adaptiveVelocityController::clear_path_distance(){
 }
 
 void adaptiveVelocityController::computeLookupTable(){
+    //Compute the lookup table to compare with the real time laser data in order to compute
+    //the clear path distance in virtual lane in real time
     for(int i=MIN_AREA_INDEX; i<=MAX_AREA_INDEX; i++){
         min_dist_lookup_table.push_back(calc_min_allowed_distance(i));
     }
@@ -302,6 +281,7 @@ void adaptiveVelocityController::computeLookupTable(){
 }
 
 void callback(adaptive_velocity_controller::AVCConfig &config, uint32_t level) {
+    //Dynamic reconfigure callback function to set the parameters dynamically during runtime
     MAX_SPEED = config.max_speed;
     MIN_SPEED = config.min_speed;
     if(MAX_SPEED<=MIN_SPEED){
@@ -317,17 +297,9 @@ void callback(adaptive_velocity_controller::AVCConfig &config, uint32_t level) {
         ROS_WARN("Maximum lookahead distance = %lf", MAX_LOOK_AHEAD_DIST);
     }
     DISTANCE_TOLERANCE = config.distance_tolerance;
-    CURV_SECT_LENGTH = config.curvature_section_length;
-    CURV_SECT_OVERLAP = config.curvature_section_overlap;
-    if(CURV_SECT_LENGTH<=CURV_SECT_OVERLAP){
-        CURV_SECT_LENGTH = CURV_SECT_OVERLAP + 0.5;
-        ROS_ERROR("Curvature section length is set less than or equal to curvature section overlap, it will be set to 'curvature section overlap + 0.5'");
-        ROS_WARN("Curvature section length = %lf", CURV_SECT_LENGTH);
-    }
     ignore_local_planner_vel_cmd = config.ignore_local_planner_vel_cmd;
     EXP_L = config.exp_l;
     EXP_G = config.exp_g;
-    EXP_P = config.exp_p;
     EXP_C = config.exp_c;
 }
 
@@ -335,31 +307,29 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "adaptive_velocity_controller");
 
+    //Setup dynamic reconfigure server
     dynamic_reconfigure::Server<adaptive_velocity_controller::AVCConfig> server;
     dynamic_reconfigure::Server<adaptive_velocity_controller::AVCConfig>::CallbackType f;
-
     f = boost::bind(&callback, _1, _2);
     server.setCallback(f);
 
+    //Get the command line parameters
     ros::NodeHandle nh("~");
     nh.param("max_speed", MAX_SPEED, 1605);
     nh.param("min_speed", MIN_SPEED, 1565);
     nh.param("exp_l", EXP_L, 2.0);
     nh.param("exp_g", EXP_G, 2.0);
-    nh.param("exp_p", EXP_P, 2.0);
     nh.param("exp_c", EXP_C, 2.0);
     nh.param("min_look_ahead_dist", MIN_LOOK_AHEAD_DIST, 0.75);
     nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 3.5);
     nh.param("distance_tolerance", DISTANCE_TOLERANCE, 0.015);
-    nh.param("curvature_section_length", CURV_SECT_LENGTH, 2.5);
-    nh.param("curvature_section_overlap", CURV_SECT_OVERLAP, 0.25);
 
-    //TODO: Min angle, max angle o anki laser konfigürasyonundan okunacak
     CAR_WIDTH = 0.45;
-    ANGLE_RESOLUTION = 0.25*M_PI/180;
-    MAX_ANGLE = M_PI-ANGLE_RESOLUTION;
-    MIN_ANGLE = 0;
+    ANGLE_RESOLUTION = 0.25*M_PI/180;           //Hokuyo angular resolution
+    MAX_ANGLE = M_PI-ANGLE_RESOLUTION;          //Hokuyo maximum angle
+    MIN_ANGLE = 0;                              //Hokuyo minimum angle
 
+    //Get the sim_granularity parameter
     std::string key;
     double sim_granularity;
     if (nh.searchParam("sim_granularity", key))
@@ -371,13 +341,11 @@ int main(int argc, char** argv)
         ROS_WARN("Simulation granularity not found, set to 0.25 by default.");
     }
 
+    //Create an instance of adaptiveVelocityController class and make sure that it communicates with move_base
     adaptiveVelocityController vC;
     ROS_ASSERT(vC.move_base_communication_error==false);
 
-    //Calculations
-    vC.CURV_SECT_SIZE = ceil(CURV_SECT_LENGTH/sim_granularity);
-    vC.CURV_SECT_OVERLAP_SIZE = ceil(CURV_SECT_OVERLAP/sim_granularity);
-
+    //Calculations of adaptive velocity controller parameters to create the virtual lane lookup table
     vC.MIN_CORNER_INDEX = floor(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(CAR_WIDTH/2))));
     vC.MAX_CORNER_INDEX = ceil(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(-1*CAR_WIDTH/2))+M_PI));
 
@@ -390,12 +358,16 @@ int main(int argc, char** argv)
     vC.MIN_AREA_INDEX = floor(vC.angle_to_index(vC.MIN_AREA_ANGLE));
     vC.MAX_AREA_INDEX = ceil(vC.angle_to_index(vC.MAX_AREA_ANGLE));
 
+    //Compute the lookup table to compare it with laser scans in real time
     vC.computeLookupTable();
 
+    //Setup the node loop rate
     ros::Rate loop_rate(50);
     while(ros::ok())
     {
+        //Convert the velocity to servo velocity
         vC.avc_vel_msg.data = vC.cmd_vel_converter();
+        //Publish the servo velocity to tas_autonomous_control_mode
         vC.avc_pub.publish(vC.avc_vel_msg);
         ros::spinOnce();
         loop_rate.sleep();

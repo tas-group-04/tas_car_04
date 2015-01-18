@@ -8,7 +8,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "autonomous_control");
     control autonomous_control;
     ros::Rate loop_rate(50);
-    int last_control_mode = 2; //Dummy variable for mode outputting
+    int last_control_mode = 2; //Variable for mode outputting only at mode changes
     while(ros::ok())
     {
         if(autonomous_control.control_Mode.data==0)
@@ -32,6 +32,7 @@ int main(int argc, char** argv)
                 if(autonomous_control.cmd_linearVelocity>0)
                 {
                     if(autonomous_control.avc_vel != 1){
+                        //Set the servo velocity equal to that calculated by adaptive_velocity_controller
                         autonomous_control.control_servo.x = autonomous_control.avc_vel;
                     }
                     else{
