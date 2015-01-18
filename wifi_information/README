@@ -1,0 +1,27 @@
+Written by Julian Heuser
+
+The main.cpp is called node_wifi_lateration.cpp
+
+There the approach of nearest neighbour matching of the distribution of the wifi signal strength is implemented.
+The guesses of the x-y position given a sample scan of wifi signals and comparing it to a database are published to the topic "wifi_lateration_node".
+
+
+The approach of modelling the signal as a wave and mapping the RSSI (signal strength) to a distance and using lateration techniques is commented out,
+ since it is not working due to high deviations in the signal strengths.
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+For the Nearest Neigbour pattern matching approach the files buildWifiDatabase.cpp, buildWifiDatabase.h and readwifistrength.cpp, readwifistrength.h are necessary.
+
+In buildWifiDatabase all functions for building a database consisting of fingerprints of the wifi signal strength distributions, creating a fingerprint and matching a fingerprint to the database can be found. A fingerprint contains the x and y position where it was taken in the map and a vector of mean signal strength values of every accesspoints. In order to create a fingerprint that is saved in the database 30 samples are taken in a total time of 5 minutes and the received signal strengths are averaged. 
+In order to read from the Database (Folder "WifiDatabase" in wifi_information folder) the correct path has to be set in the function parseWifiDatabase(). The positions where the datapoints were sampled are shown in the figures in the wifi_information folder. Also a figure shows their corresponding final "fingerprints".
+
+
+In readwifistrength the wifi signals of the TAS-NET accesspoints are read by calling the linux shell command "iwlist [wlan] scan". Also the functions that maps a signal given its frequency and its signal level in dbm into a distance in meter is defined here.
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+For the Lateration approach modelling the signal as a wave, the files readwifistrength.cpp, readwifistrength.h, circleintersections.cpp, circleintersections.h and findlocation.cpp, findlocation.h are necessary.
+
+In circleintersections the two intersections of two circles that cross each other are computed. 
+In findlocation the intersection that is most frequently given multiple circles (for every accesspoint 1 circle) and all their intersections to the other circles is computed and a potential position guess is derived.

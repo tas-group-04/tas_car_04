@@ -1,0 +1,3 @@
+string initial_pose_guess
+float64 wifi_estimate_pos_x
+float64 wifi_estimate_pos_y
