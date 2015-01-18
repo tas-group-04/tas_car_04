@@ -9,7 +9,7 @@
 #include <fstream>
 
 ///***********************Textfile for imu messages****************************/
-const char *path="/home/tas_group_04/ImuPlots/wifi_data_pe_with_acml.txt";	//set path here !!!
+const char *path="/home/tas_group_04/ImuPlots/imu_yaw.txt";	//set path here !!!
 std::ofstream IMUfile(path); //open in constructor
 std::string data;
 std::stringstream ss1;
@@ -25,29 +25,28 @@ control::control()
 
     odom_sub_ = nh_.subscribe<geometry_msgs::Twist>("odom_vel",1000,&control::odomCallback,this);
 
-    // tmp
     laser_sub_ = nh_.subscribe<sensor_msgs::LaserScan>("scan", 1, &control::scanCallback,this);
     pose_sub_ = nh_.subscribe<geometry_msgs::PoseWithCovarianceStamped>("amcl_pose", 1, &control::poseCallback,this);
-    //
+    
     wii_communication_sub = nh_.subscribe<std_msgs::Int16MultiArray>("wii_communication",1000,&control::wiiCommunicationCallback,this);
 
 
     imu_data_sub_ = nh_.subscribe<sensor_msgs::Imu>("/imu/data",1000,&control::imuCallback,this);
 
-
-    wifi_sub_ = nh_.subscribe<wifi_information::wifi_msgs>("wifi_lateration_node", 1, &control::wifiCallback,this);
-
+    //clustering guesses 60 cm to wall & 30 cm to box
     cluster_centroid[0] = 0.6;
     cluster_centroid[1] = 0.3;
+    
     cntr = 0;
-    scanCtr=0;
-    counter = 0;
-    parkDetected = 0;
+    scanCtr=0;     //thought for dividing the scanning frequency, but currently disabled (see scancallback)
+    counter = 0;   //for every 20th scan, run the detection algorithms
+    parkDetected = 0;  //flag which indicates if the parking slot is detected
     imuCtr=0;
-    first_jump_index = -15;
-    second_jump_index = -15;
+    first_jump_index = -15;    //the start index of parking spot in the scandata vector
+    second_jump_index = -15;   //the end index of parking spot in the scandata vector
 
-    eucl_distance = 99.0;
+
+    eucl_distance = 99.0;    //after the park detection, it will give the distance of the car to the second box
 
     //********************PARKING PARAMETERS ****************************/
     // initializing___________________________________
@@ -113,12 +112,12 @@ void moveBackward(control* control_object){
 
 
 /*********************************PARKING LOT DETECTION FUNCTIONS****************************************/
-/********************************************************************************************************/
-/********************************************************************************************************/
-/********************************************************************************************************/
-/********************************************************************************************************/
-/********************************************************************************************************/
+
+
 /*********************************AVERAGING FILTER FUNCTION****************************************/
+/*
+ Thought for smoothing the data before the detection algorithms, but currently disabled. Doesn't do any changes on the raw data
+ */
 void control::smoothData()
 {
     smoothedRanges.clear();
@@ -139,6 +138,9 @@ void control::smoothData()
 
 
 /*********************************KMeans FUNCTION****************************************/
+
+//runs the clustering algorithm on the scan ranges. kmeans function returns an array with 2 groups of ranges. Hopefully one group is around 0.6 meter and the other around 0.3 meter. Appends the resulting data in cluster_assignment final array.                                                      .6 .6 .6 .6 .3 .3 ...
+//Example: 0.6 ranges are group zero and 0.3 ranges are group 1. Final vector consists of 0  0  0  0  1  1 ...
 void control::runKmeans()
 {
     double clustered_scans[smoothedRanges.size()];
@@ -151,16 +153,15 @@ void control::runKmeans()
     kmeans(1,clustered_scans,smoothedRanges.size(),2,cluster_centroid,cluster_assignment_final_array);
     cluster_assignment_final.clear();
     for(int i =0; i < smoothedRanges.size();i++){
-        //std::cout << cluster_assignment_final_array[i] << std::endl;
         cluster_assignment_final.append(cluster_assignment_final_array[i]);
     }
-    //std::cout << "cluster centroid at the end of kmeans call: " << cluster_centroid[0] << "and" << cluster_centroid[1] << std::endl;
 }
 /*********************************KMeans FUNCTION****************************************/
 
 
 /********************************************************************************************************/
 /*********************************DERIVATIVE FUNCTION****************************************/
+//detects changes from 0 to 1 or 1 to 0
 void control::calculateDerivatives()
 {
     derivative_of_scans.clear();
@@ -177,6 +178,9 @@ void control::calculateDerivatives()
 /*********************************DERIVATIVE FUNCTION****************************************/
 
 /*********************************JUMP DETECTION FUNCTION****************************************/
+
+// find jumps from 1 to 0 or 0 to 1. Checks if the pattern matches to our parking scenario. Returns one if so.
+//(used in parking node. cpp)
 int control::detectJumps()
 {
     cntr = 0;
@@ -212,7 +216,8 @@ int control::detectJumps()
 /********************************************************************************************************/
 /********************************************************************************************************/
 
-
+//THought for drving to the starting position after detection of the park slot. But currently not used.
+// checks if the car has arrived to that position. Returns 1 if so.
 int control::findReferencePosition(){
     //std::cout << scanValues.at(second_jump_index).ownPos_x << std::endl;
     double length_park;
@@ -234,6 +239,11 @@ int control::findReferencePosition(){
 
     return 0;
 }
+
+//Calculates the waypoints to pass while parking.
+//Where the car has to stop first is x,y_start
+//Where it should change the direction of steering is x,y_turn
+//Where it should stop at the end is x,y_goal
 
 int control::calculateWaypoints(){
     if(parkDetected){
@@ -353,36 +363,7 @@ void control::poseCallback(const geometry_msgs::PoseWithCovarianceStamped p){
 /******************************AMCL POSE CALLBACK*************************************************/
 
 
-void control::wifiCallback(const wifi_information::wifi_msgs wifi_data){
-    wifi_x = wifi_data.wifi_estimate_pos_x;
-    wifi_y = wifi_data.wifi_estimate_pos_y;
 
-
-    // WRITE TO IMU TEXT FILE
-
-
-        ss1 << wifi_x;
-        data =ss1.str();
-            IMUfile << data;
-        ss1.str(std::string());	// clear stringstream
-        IMUfile << ":";
-        ss1 << wifi_y;
-        data =ss1.str();
-            IMUfile << data;
-        ss1.str(std::string());	// clear stringstream
-        IMUfile << ":";
-        ss1 << pos_x;
-        data =ss1.str();
-        ss1.str(std::string());	// clear stringstream
-            IMUfile << data;
-        IMUfile << ":";
-        ss1 << pos_y;
-        data =ss1.str();
-        ss1.str(std::string()); // clear stringstream
-            IMUfile << data;
-
-        IMUfile << "\n";
-}
 
 
 ///*****************************IMU CALLBACK*************************************************/
@@ -411,7 +392,7 @@ void control::imuCallback(const sensor_msgs::Imu imu_data){
 
     //    std::cout << "Roll: " << roll << ", Pitch: " << pitch << ", Yaw: " << yaw << std::endl;
 
-/*    imuCtr++;
+    imuCtr++;
     if (imuCtr > 25){ // WRITE EVERY 25th VALUE
         // WRITE TO IMU TEXT FILE
         ss1 << yaw;
@@ -421,7 +402,6 @@ void control::imuCallback(const sensor_msgs::Imu imu_data){
         IMUfile << "\n";
         imuCtr = 0;
     }
-*/
 }
 ///******************************IMU CALLBACK************************************************
 
@@ -436,6 +416,7 @@ void control::scanCallback(const sensor_msgs::LaserScan laser)
         float temp_range = 0.0;
 
         scanCtr=0;
+        //read ranges from laser message & store in a vector
         for(unsigned int i=710; i<720;i++)
         {
             temp_range += laser.ranges[i];
@@ -443,17 +424,18 @@ void control::scanCallback(const sensor_msgs::LaserScan laser)
         sD.range = temp_range / 10.0;
         sD.ownPos_x = pos_x;
         sD.ownPos_y = pos_y;
-        //      std::cout <<"x,y: (" <<  sD.ownPos_x << " , "<< sD.ownPos_y << " )"<< std::endl;
         scanValues.push_back(sD);
+        //
+        
+        
         if(!parkDetected){
             counter++;
 
             if (counter > 20){
+                //run detection algorithms in the right order
                 smoothData();
                 runKmeans();
                 calculateDerivatives();
-                //std::cout << "return value is: "<< detectJumps() << std::endl;
-                std::cout << "CALL OF smoothData(), runKmeans() and calculateDerivatives()" << std::endl;
                 counter = 0;
             }
         }
