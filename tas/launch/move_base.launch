@@ -92,7 +92,7 @@
   <!-- Run trajectory control -->
   <node pkg = "tas_autonomous_control" type="tas_autonomous_control_node" name="tas_autonomous_control_node" />
 
-<node name="adaptive_velocity_controller" pkg="adaptive_velocity_controller" type="adaptive_velocity_controller" /> 
+<node name="adaptive_velocity_controller" pkg="adaptive_velocity_controller" type="adaptive_velocity_controller" output="screen"/> 
 
   <node name="simple_navigation_goals" pkg="simple_navigation_goals" type="simple_navigation_goals_node"/>
   <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure"/> 
