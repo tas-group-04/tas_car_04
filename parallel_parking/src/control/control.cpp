@@ -246,7 +246,6 @@ int control::findReferencePosition(){
 //Where it should stop at the end is x,y_goal
 
 int control::calculateWaypoints(){
-    if(parkDetected){
         x1j = scanValues.at(first_jump_index).ownPos_x;
         y1j = scanValues.at(first_jump_index).ownPos_y;
         x2j = scanValues.at(second_jump_index).ownPos_x;
@@ -287,7 +286,6 @@ int control::calculateWaypoints(){
         x_turn = 0.5*(x_s_c + x_g_c);
         y_turn = 0.5*(y_s_c + y_g_c);
         return 1;
-    }else{return 0;}
 }
 
 
