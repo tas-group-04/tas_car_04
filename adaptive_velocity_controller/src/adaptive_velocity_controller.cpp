@@ -10,9 +10,32 @@
 using namespace std;
 
 //Parameters
-double MAX_ANGLE, MIN_ANGLE, ANGLE_RESOLUTION, CAR_WIDTH, MAX_LOOK_AHEAD_DIST;
-double MIN_LOOK_AHEAD_DIST, DISTANCE_TOLERANCE, CURV_SECT_LENGTH, CURV_SECT_OVERLAP;
+double MAX_ANGLE, MIN_ANGLE, ANGLE_RESOLUTION, CAR_WIDTH, MAX_LOOK_AHEAD_DIST, MIN_LOOK_AHEAD_DIST, DISTANCE_TOLERANCE;
 bool ignore_local_planner_vel_cmd;
+int MAX_SPEED = 1605;
+int MIN_SPEED = 1565;
+double EXP_L = 2;
+double EXP_G = 2;
+double EXP_C = 2;
+float SLOPE, Y_INTERSECT;
+
+/*Parameter definitions:
+ * MAX_ANGLE: Maximum scan angle in the virtual lane for checking clear path distance
+ * MIN_ANGLE: Minimum scan angle in the virtual lane for checking clear path distance
+ * ANGLE_RESOLUTION: Angular resolution of Hokuyo laser
+ * MAX_LOOK_AHEAD_DIST: Clear path calculations are done up to this much of distance in the virtual lane
+ * MIN_LOOK_AHEAD_DIST: Clear path calculations are done from this much of distance on in the virtual lane
+ * DISTANCE_TOLERANCE: The tolerance of the scan ranges in the virtual lane. Measurements within this tolerance
+ *                      are considered as no obstacle in the virtual lane.
+ * ignore_local_planner_vel_cmd: Boolean variable for ignoring/considering the cmd_vel messages from move_base
+ * MAX_SPEED: Maximum servo velocity
+ * MIN_SPEED: Minimum servo velocity
+ * EXP_L: Local plan curvature weighting exponential in velocity calculation. See cmd_vel_converter() for reference
+ * EXP_G: Global plan curvature weighting exponential in velocity calculation. See cmd_vel_converter() for reference
+ * EXP_C: Clear path ratio plan weighting exponential in velocity calculation. See cmd_vel_converter() for reference
+ * */
+
+
 
 //Calculations
 /*double MIN_CORNER_ANGLE, MAX_CORNER_ANGLE;
@@ -20,12 +43,7 @@ int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SEC
 double MIN_AREA_ANGLE, MAX_AREA_ANGLE;
 vector<double> min_dist_lookup_table;*/
 
-int MAX_SPEED = 1605;
-int MIN_SPEED = 1565;
-double EXP_L = 2;
-double EXP_G = 2;
-double EXP_C = 2;
-float SLOPE, Y_INTERSECT;
+
 
 int adaptiveVelocityController::cmd_vel_converter(){
     /*Function which maps the cmd_vel message from move_base to servo command range.
