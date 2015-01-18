@@ -40,14 +40,8 @@ int main(int argc, char** argv)
                     parking_control.control_servo.y = 1500;
                     //std::cout << "return value is: "<< parking_control.detectJumps() << std::endl;
                     if(parking_control.detectJumps()){
-                        if(parking_control.calculateWaypoints())
-                            parking_control.parkDetected = 1;
-                        else
-                            std::cout << "WAYPOINTS RETURN 0" << std::endl;
-
-                        //                        ros::Duration d = ros::Duration(1.15);
-                        //                        ROS_WARN("Half a second continue");
-                        //                        d.sleep();
+                        parking_control.parkDetected = 1;
+                        parking_control.calculateWaypoints();
                     }
                 }else if(parking_control.parkDetected && !in_start_position && !in_turn_position && ! in_goal_position){
                     if(parking_control.eucl_distance>0 && parking_control.eucl_distance < 0.6){
