@@ -2,17 +2,13 @@
 #include <cmath>
 #include "sensor_msgs/LaserScan.h"
 #include <string>
-
 using namespace std;
-
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "autonomous_control");
     control autonomous_control;
-
     ros::Rate loop_rate(50);
-
-    int last_control_mode = 2;  //Dummy variable for mode outputting
+    int last_control_mode = 2; //Dummy variable for mode outputting
     while(ros::ok())
     {
         if(autonomous_control.control_Mode.data==0)
@@ -30,7 +26,7 @@ int main(int argc, char** argv)
             }
             else
             {
-                if(last_control_mode != 0)
+                if(last_control_mode != 1)
                     ROS_INFO("Automatic Control Mode!");
                 last_control_mode = 1;
                 if(autonomous_control.cmd_linearVelocity>0)
@@ -53,16 +49,10 @@ int main(int argc, char** argv)
                 }
                 autonomous_control.control_servo.y = autonomous_control.cmd_steeringAngle;
             }
-
             autonomous_control.control_servo_pub_.publish(autonomous_control.control_servo);
-
         }
-
         ros::spinOnce();
         loop_rate.sleep();
-
     }
-
     return 0;
-
 }

@@ -59,50 +59,55 @@ int main(int argc, char** argv){
 
 
     ifstream file;
-    file.open(QDir::homePath().append("/catkin_ws/src/tas_car_04/goals.txt").toAscii());
+    //file.open(QDir::homePath().append("/catkin_ws/src/tas_car_04/goals.txt").toAscii());
 
     string s_line;
     QString line;
 
     int num=0;
 
-    while(!file.eof()){
-        getline(file,s_line);
-        line = s_line.c_str();
-        if(line.contains("position")){
-            num++;
+    for(int i=0; i<15; i++){
+        file.open(QDir::homePath().append("/catkin_ws/src/tas_car_04/goals.txt").toAscii());
+
+        while(!file.eof()){
             getline(file,s_line);
             line = s_line.c_str();
-            QStringList value;
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.x = value.at(1).toFloat();
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.y = value.at(1).toFloat();
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.position.z = value.at(1).toFloat();
-            getline(file,s_line);
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.x = value.at(1).toFloat();
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.y = value.at(1).toFloat();
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.z = value.at(1).toFloat();
-            getline(file,s_line);
-            line = s_line.c_str();
-            value = line.split(":", QString::SkipEmptyParts);
-            waypoint1.orientation.w = value.at(1).toFloat();
-            waypoints.push_back(waypoint1);
+            if(line.contains("position")){
+                num++;
+                getline(file,s_line);
+                line = s_line.c_str();
+                QStringList value;
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.position.x = value.at(1).toFloat();
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.position.y = value.at(1).toFloat();
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.position.z = value.at(1).toFloat();
+                getline(file,s_line);
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.orientation.x = value.at(1).toFloat();
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.orientation.y = value.at(1).toFloat();
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.orientation.z = value.at(1).toFloat();
+                getline(file,s_line);
+                line = s_line.c_str();
+                value = line.split(":", QString::SkipEmptyParts);
+                waypoint1.orientation.w = value.at(1).toFloat();
+                waypoints.push_back(waypoint1);
+            }
         }
+        file.close();
     }
 
     for(int i=0; i<waypoints.size(); i++){

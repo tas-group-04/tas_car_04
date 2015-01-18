@@ -97,8 +97,6 @@ Visualization Manager:
           Value: true
         laser:
           Value: true
-        laser_back:
-          Value: true
         map:
           Value: true
         odom:
@@ -118,8 +116,6 @@ Visualization Manager:
                 base_imu:
                   {}
                 laser:
-                  {}
-                laser_back:
                   {}
       Update Interval: 0
       Value: true
@@ -162,42 +158,6 @@ Visualization Manager:
       Name: Map
       Topic: /move_base_node/global_costmap/costmap
       Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz/LaserScan
-      Color: 255; 85; 255
-      Color Transformer: FlatColor
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: LaserScan
-      Position Transformer: XYZ
-      Queue Size: 10
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.05
-      Style: Flat Squares
-      Topic: /scan_back
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
-    - Alpha: 1
-      Class: rviz/Polygon
-      Color: 25; 255; 0
-      Enabled: true
-      Name: Polygon
-      Topic: /move_base_node/local_costmap/obstacle_layer_footprint/footprint_stamped
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -222,16 +182,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 26.5887
+      Distance: 63.7004
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 11.5945
-        Y: 17.2875
-        Z: -11.0959
+        X: 23.3104
+        Y: 10.3447
+        Z: -11.102
       Name: Current View
       Near Clip Distance: 0.01
       Pitch: 1.5698

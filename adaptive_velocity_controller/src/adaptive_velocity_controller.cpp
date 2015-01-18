@@ -33,6 +33,7 @@ int adaptiveVelocityController::cmd_vel_converter(){
     float max_vel, min_vel;
     int counter = 0;
     double speed;
+    double speed_diff = MAX_SPEED-MIN_SPEED;
     if(ignore_local_planner_vel_cmd == false){
         while(ros::param::get("/move_base_node/TrajectoryPlannerROS/max_vel_x", max_vel) == false ||
               ros::param::get("/move_base_node/TrajectoryPlannerROS/min_vel_x", min_vel)==false){
@@ -53,19 +54,18 @@ int adaptiveVelocityController::cmd_vel_converter(){
             SLOPE = (MAX_SPEED - MIN_SPEED)/(max_vel-min_vel);
             Y_INTERSECT = MAX_SPEED - max_vel*SLOPE;
             speed = SLOPE*cmd_vel + Y_INTERSECT;
+            speed_diff = speed-MIN_SPEED;
         }
         else{
             ROS_FATAL("Minimum and maximum velocities of local planner are equal. Node will shot down");
             return 1;
         }
     }
-    else{
-        speed = MIN_SPEED;
-        speed += (MAX_SPEED-MIN_SPEED)*pow(local_plan_curvature, EXP_L)*pow(global_plan_curvature, EXP_G)*pow(min_obstacle_distance/MAX_LOOK_AHEAD_DIST, EXP_C);
-    }
+
+    speed = MIN_SPEED + speed_diff*pow(local_plan_curvature, EXP_L)*pow(global_plan_curvature, EXP_G)*pow(min_obstacle_distance/MAX_LOOK_AHEAD_DIST, EXP_C);
     speed = speed+0.5;
     int ret = (int)speed;
-    cout << "Speed: " << ret << endl;
+    ROS_INFO_STREAM("Clear Path= " << min_obstacle_distance << " Vel= " << ret << " G= " << global_plan_curvature << " L= " << local_plan_curvature);
     return ret;
 }
 
@@ -146,7 +146,6 @@ void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPt
         ROS_WARN("Local plan curvature is 0 and ignored");
         local_plan_curvature = 1;
     }
-    ROS_INFO_STREAM("Local Plan Curv: " << local_plan_curvature);
 }
 
 //Global Plan Callback
@@ -200,7 +199,6 @@ void adaptiveVelocityController::globalPlanCallback(const nav_msgs::Path::ConstP
             global_plan_curvature = 1;
         }
     }
-    ROS_INFO_STREAM("Global Plan Curv: " << global_plan_curvature);
 }
 
 
@@ -252,7 +250,6 @@ void adaptiveVelocityController::scanCallback(const sensor_msgs::LaserScan msg)
             min_obstacle_distance = msg.ranges[MIN_AREA_INDEX+i]*sin(index_to_angle(MIN_AREA_INDEX+i));
         }
     }
-    ROS_INFO_STREAM("Path clear up to " << min_obstacle_distance << " meters");
 }
 
 int adaptiveVelocityController::angle_to_index(double angle){
