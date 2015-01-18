@@ -22,9 +22,6 @@ double EXP_C = 2;
 float SLOPE, Y_INTERSECT;
 
 /*Parameter definitions:
- * MAX_ANGLE: Maximum scan angle in the virtual lane for checking clear path distance
- * MIN_ANGLE: Minimum scan angle in the virtual lane for checking clear path distance
- * ANGLE_RESOLUTION: Angular resolution of Hokuyo laser
  * MAX_LOOK_AHEAD_DIST: Clear path calculations are done up to this much of distance in the virtual lane
  * MIN_LOOK_AHEAD_DIST: Clear path calculations are done from this much of distance on in the virtual lane
  * DISTANCE_TOLERANCE: The tolerance of the scan ranges in the virtual lane. Measurements within this tolerance
@@ -38,6 +35,9 @@ float SLOPE, Y_INTERSECT;
  * */
 
 /*Calculation parameters of virtual lane during runtime:
+ * MAX_ANGLE: Maximum angle measured by Hokuyo laser
+ * MIN_ANGLE: Minimum angle measured by Hokuyo laser
+ * ANGLE_RESOLUTION: Angular resolution of Hokuyo laser
  * MIN_CORNER_ANGLE: The angle of the laser measurement at the right top corner of the virtual lane
  * MAX_CORNER_ANGLE: The angle of the laser measurement at the left top corner of the virtual lane
  * MIN_CORNER_INDEX: The index of the measurement in laser scan message corresponding to MIN_CORNER_ANGLE
