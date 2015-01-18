@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 13.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 14948)  -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="33"
+   height="36"
+   viewBox="0 0 36.845 43.541"
+   enable-background="new 0 0 36.845 43.541"
+   xml:space="preserve"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="lsr_logo_foot.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"><metadata
+   id="metadata12"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+   id="defs10"><inkscape:perspective
+     sodipodi:type="inkscape:persp3d"
+     inkscape:vp_x="0 : 21.7705 : 1"
+     inkscape:vp_y="0 : 1000 : 0"
+     inkscape:vp_z="36.845001 : 21.7705 : 1"
+     inkscape:persp3d-origin="18.422501 : 14.513667 : 1"
+     id="perspective14" /></defs><sodipodi:namedview
+   inkscape:window-height="988"
+   inkscape:window-width="1680"
+   inkscape:pageshadow="2"
+   inkscape:pageopacity="0.0"
+   guidetolerance="10.0"
+   gridtolerance="10.0"
+   objecttolerance="10.0"
+   borderopacity="1.0"
+   bordercolor="#666666"
+   pagecolor="#ffffff"
+   id="base"
+   showgrid="false"
+   inkscape:zoom="15.00578"
+   inkscape:cx="27.59382"
+   inkscape:cy="23.064341"
+   inkscape:window-x="1680"
+   inkscape:window-y="24"
+   inkscape:current-layer="g3"
+   borderlayer="true"
+   units="mm" />
+<g
+   id="g3"
+   transform="translate(16.212028,3.3176292)">
+	<rect
+   style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.70000004999999990;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="rect2425"
+   width="44.169033"
+   height="25.389133"
+   x="-3.3876014"
+   y="-3.6908472"
+   transform="translate(-16.212028,-3.3176292)" /><rect
+   style="fill:#0065bd;fill-opacity:1;stroke:none;stroke-width:2.70000005;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="rect3194"
+   width="39.846954"
+   height="35.993275"
+   x="-17.701454"
+   y="4.2300954"
+   rx="0"
+   ry="0" /><g
+   id="g3169"
+   transform="matrix(0.8743218,0,0,0.7859906,-13.898745,4.2457756)"><rect
+     rx="8.4527607"
+     ry="8.9213047"
+     y="-9.6227674"
+     x="-4.5304384"
+     height="52.860268"
+     width="45.910507"
+     id="rect2387"
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.70000005;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" /></g>
+	<g
+   id="g3159"
+   transform="matrix(0.7053772,0,0,0.7182953,-10.634048,3.3205353)"><path
+     style="fill:#0065bd"
+     id="path5"
+     d="M 10.461338,-4.1633363e-17 C 9.8543377,0.494 7.3923377,2.169 5.2763377,3.261 C 3.0113377,4.431 0.95833773,5.234 -0.37466227,5.52 C 0.95833773,5.805 3.0113377,6.603 5.2763377,7.772 C 7.3923377,8.865 8.7643377,9.87 10.461338,11.034 L 10.461338,7.682 L 32.140338,7.682 L 32.140338,25.024 L 10.461338,25.024 L 10.461338,29.361 L 36.470338,29.361 L 36.470338,25.024 L 36.470338,3.345 L 32.140338,3.345 L 32.140338,3.351 L 10.461338,3.351 L 10.461338,-4.1633363e-17 L 10.461338,-4.1633363e-17 z" /><path
+     style="fill:#8c0028"
+     id="path7"
+     d="M -0.37466227,14.187 L -0.37466227,18.518 L -0.37466227,35.859 L -0.37466227,40.196 L 25.634338,40.196 L 25.634338,43.541 C 26.242338,43.048 28.709338,41.371 30.825338,40.279 C 33.089338,39.11 35.138338,38.312 36.470338,38.027 C 35.139338,37.742 33.089338,36.943 30.825338,35.775 C 28.710338,34.682 27.331338,33.677 25.634338,32.513 L 25.634338,35.859 L 3.9623377,35.859 L 3.9623377,18.518 L 25.634338,18.518 L 25.634338,14.187 L 3.9623377,14.187 L -0.37466227,14.187 L -0.37466227,14.187 z" /></g>
+</g>
+</svg>
