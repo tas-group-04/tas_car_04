@@ -16,7 +16,6 @@
 #include "kmeans/kmeans.h"
 #include <vector>
 
-#include "wifi_information/wifi_msgs.h" // INCLUDE WIFI MSG - FOR TESTING
 
 
 #include <QVector>
@@ -43,10 +42,6 @@ public:
     //tmp
     ros::Subscriber laser_sub_;
     ros::Subscriber pose_sub_;
-
-	ros::Subscriber wifi_sub_;
-
-
 
     std_msgs::Int16 control_Brake; /* flag for brake */
     std_msgs::Int16 control_Mode; /* flag for car mode: manual or autonomous */
@@ -103,8 +98,6 @@ float y1j   ;
 float x2j   ;
 float y2j   ;
 
-float wifi_x, wifi_y;
-
 private:
     float ranges[720];
     int first_jump_index;
@@ -142,7 +135,7 @@ private:
 
 
 
-    void wifiCallback(const wifi_information::wifi_msgs wifi_data);
+
 
 
 

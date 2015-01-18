@@ -40,11 +40,8 @@ int main(int argc, char** argv)
                     parking_control.control_servo.y = 1500;
                     //std::cout << "return value is: "<< parking_control.detectJumps() << std::endl;
                     if(parking_control.detectJumps()){
-                        parking_control.parkDetected = 1;
-
-                        if(parking_control.calculateWaypoints()){
-
-                        }
+                        if(parking_control.calculateWaypoints())
+                            parking_control.parkDetected = 1;
                         else
                             std::cout << "WAYPOINTS RETURN 0" << std::endl;
 
