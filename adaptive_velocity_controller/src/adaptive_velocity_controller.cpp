@@ -17,6 +17,8 @@ int MIN_SPEED = 1565;
 double EXP_L = 2;
 double EXP_G = 2;
 double EXP_C = 2;
+
+//Slope and y-intersect of linear mapping of cmd_vel to servo commands
 float SLOPE, Y_INTERSECT;
 
 /*Parameter definitions:
@@ -35,26 +37,29 @@ float SLOPE, Y_INTERSECT;
  * EXP_C: Clear path ratio plan weighting exponential in velocity calculation. See cmd_vel_converter() for reference
  * */
 
+/*Calculation parameters of virtual lane during runtime:
+ * MIN_CORNER_ANGLE: The angle of the laser measurement at the right top corner of the virtual lane
+ * MAX_CORNER_ANGLE: The angle of the laser measurement at the left top corner of the virtual lane
+ * MIN_CORNER_INDEX: The index of the measurement in laser scan message corresponding to MIN_CORNER_ANGLE
+ * MAX_CORNER_INDEX: The index of the measurement in laser scan message corresponding to MAX_CORNER_ANGLE
+ * MIN_AREA_ANGLE:   The angle of the laser measurement at the right bottom corner of the virtual lane
+ * MAX_AREA_ANGLE:   The angle of the laser measurement at the left bottom corner of the virtual lane
+ * MIN_AREA_INDEX:   The index of the measurement in laser scan message corresponding to MIN_AREA_ANGLE
+ * MAX_AREA_INDEX:   The index of the measurement in laser scan message corresponding to MAX_AREA_ANGLE
+*/
 
-
-//Calculations
-/*double MIN_CORNER_ANGLE, MAX_CORNER_ANGLE;
-int MIN_CORNER_INDEX, MAX_CORNER_INDEX, MIN_AREA_INDEX, MAX_AREA_INDEX, CURV_SECT_SIZE, CURV_SECT_OVERLAP_SIZE;
-double MIN_AREA_ANGLE, MAX_AREA_ANGLE;
-vector<double> min_dist_lookup_table;*/
-
-
+bool update_lookup_table = true;
 
 int adaptiveVelocityController::cmd_vel_converter(){
     /*Function which maps the cmd_vel message from move_base to servo command range.
      * The range of servo command is between MIN_SPEED and MAX_SPEED parameters.
-     * The function can ignore the velocity commands from move base. Depending on the
-     * local plan curvature, global plan curvature and minimum obstacle distance
+     * The function can ignore the velocity commands from move base, if set by the user. Depending on the
+     * local plan curvature, global plan curvature and the ratio of minimum obstacle distance to MAX_LOOK_AHEAD_DIST
      * the velocity is adaptively changed. The more linear the global and local plans are and
      * the more is the distance to the nearest obstacle (minimum_obstacle_distance), the higher
      * becomes the servo velocity command. The weighting factor of each component (local plan curvature,
-     * global plan curvature and clear path ratio to MAX_LOOK_AHEAD_DIST) is calculated by taking the EXP_L, EXP_G and EXP_C
-     * power of each factor. Each factor is a number between zero and one.*/
+     * global plan curvature and the ratio of minimum obstacle distance to MAX_LOOK_AHEAD_DIST) is calculated by taking the
+     * EXP_L, EXP_G and EXP_C power of each factor. Each factor is a number between zero and one.*/
 
     float max_vel, min_vel;
     int counter = 0;
@@ -155,6 +160,10 @@ void adaptiveVelocityController::localPlanCallback(const nav_msgs::Path::ConstPt
 
     if(local_plan_curvature == 0){
         ROS_WARN("Local plan curvature is 0 and ignored");
+        local_plan_curvature = 1;
+    }
+    else if(local_plan_curvature > 1){
+        ROS_WARN("Local plan curvature is greater than 1 and ignored");
         local_plan_curvature = 1;
     }
 }
@@ -289,6 +298,7 @@ double adaptiveVelocityController::clear_path_distance(){
 void adaptiveVelocityController::computeLookupTable(){
     //Compute the lookup table to compare with the real time laser data in order to compute
     //the clear path distance in virtual lane in real time
+    min_dist_lookup_table.clear();
     for(int i=MIN_AREA_INDEX; i<=MAX_AREA_INDEX; i++){
         min_dist_lookup_table.push_back(calc_min_allowed_distance(i));
     }
@@ -300,6 +310,10 @@ void adaptiveVelocityController::computeLookupTable(){
 
 void callback(adaptive_velocity_controller::AVCConfig &config, uint32_t level) {
     //Dynamic reconfigure callback function to set the parameters dynamically during runtime
+    if(MAX_LOOK_AHEAD_DIST != config.max_look_ahead_dist || MIN_LOOK_AHEAD_DIST != config.min_look_ahead_dist){
+        update_lookup_table = true;
+    }
+
     MAX_SPEED = config.max_speed;
     MIN_SPEED = config.min_speed;
     if(MAX_SPEED<=MIN_SPEED){
@@ -339,7 +353,7 @@ int main(int argc, char** argv)
     nh.param("exp_g", EXP_G, 2.0);
     nh.param("exp_c", EXP_C, 2.0);
     nh.param("min_look_ahead_dist", MIN_LOOK_AHEAD_DIST, 0.75);
-    nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 3.5);
+    nh.param("max_look_ahead_dist", MAX_LOOK_AHEAD_DIST, 2.5);
     nh.param("distance_tolerance", DISTANCE_TOLERANCE, 0.015);
 
     CAR_WIDTH = 0.45;
@@ -363,26 +377,29 @@ int main(int argc, char** argv)
     adaptiveVelocityController vC;
     ROS_ASSERT(vC.move_base_communication_error==false);
 
-    //Calculations of adaptive velocity controller parameters to create the virtual lane lookup table
-    vC.MIN_CORNER_INDEX = floor(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(CAR_WIDTH/2))));
-    vC.MAX_CORNER_INDEX = ceil(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(-1*CAR_WIDTH/2))+M_PI));
-
-    vC.MIN_CORNER_ANGLE = vC.index_to_angle(vC.MIN_CORNER_INDEX);
-    vC.MAX_CORNER_ANGLE = vC.index_to_angle(vC.MAX_CORNER_INDEX);
-
-    vC.MIN_AREA_ANGLE = atan(MIN_LOOK_AHEAD_DIST/(CAR_WIDTH/2));
-    vC.MAX_AREA_ANGLE = M_PI-vC.MIN_AREA_ANGLE;
-
-    vC.MIN_AREA_INDEX = floor(vC.angle_to_index(vC.MIN_AREA_ANGLE));
-    vC.MAX_AREA_INDEX = ceil(vC.angle_to_index(vC.MAX_AREA_ANGLE));
-
-    //Compute the lookup table to compare it with laser scans in real time
-    vC.computeLookupTable();
-
     //Setup the node loop rate
     ros::Rate loop_rate(50);
     while(ros::ok())
     {
+        if(update_lookup_table){
+            //Calculations of adaptive velocity controller parameters to create the virtual lane lookup table
+            vC.MIN_CORNER_INDEX = floor(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(CAR_WIDTH/2))));
+            vC.MAX_CORNER_INDEX = ceil(vC.angle_to_index(atan(MAX_LOOK_AHEAD_DIST/(-1*CAR_WIDTH/2))+M_PI));
+
+            vC.MIN_CORNER_ANGLE = vC.index_to_angle(vC.MIN_CORNER_INDEX);
+            vC.MAX_CORNER_ANGLE = vC.index_to_angle(vC.MAX_CORNER_INDEX);
+
+            vC.MIN_AREA_ANGLE = atan(MIN_LOOK_AHEAD_DIST/(CAR_WIDTH/2));
+            vC.MAX_AREA_ANGLE = M_PI-vC.MIN_AREA_ANGLE;
+
+            vC.MIN_AREA_INDEX = floor(vC.angle_to_index(vC.MIN_AREA_ANGLE));
+            vC.MAX_AREA_INDEX = ceil(vC.angle_to_index(vC.MAX_AREA_ANGLE));
+
+            //Compute the lookup table to compare it with laser scans in real time
+            vC.computeLookupTable();
+            update_lookup_table = false;
+        }
+
         //Convert the velocity to servo velocity
         vC.avc_vel_msg.data = vC.cmd_vel_converter();
         //Publish the servo velocity to tas_autonomous_control_mode
